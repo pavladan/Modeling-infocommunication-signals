@@ -1,0 +1,94 @@
+/* global require module __dirname */
+
+const path = require("path");
+
+const babelTransformClassPlugin = require("@babel/plugin-proposal-class-properties")
+  .default;
+const CleanWebpackPlugin = require("clean-webpack-plugin");
+const TerserPlugin = require("terser-webpack-plugin");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+
+const srcDist = "./src/";
+const outputDir = "./dist";
+
+const clean = new CleanWebpackPlugin([outputDir]);
+const html = new HtmlWebpackPlugin({
+	template: './public/index.html'
+})
+
+module.exports = env => {
+  const mode = env && env.mode === "prod" ? "production" : "development";
+  const config = {
+    mode: mode,
+    entry: srcDist + "/index.js",
+    resolve: {
+      extensions: [".js", ".jsx"]
+    },
+    module: {
+      rules: [
+        {
+          test: /\.(woff|woff2|eot|ttf|otf)$/,
+          use: {
+            loader: "file-loader",
+            options: {
+              name: "fonts/[name].[ext]",
+              publicPath: "../"
+            }
+          }
+        },
+        {
+          test: /\.(png|svg|jpg|gif)$/,
+          use: {
+            loader: "file-loader",
+            options: {
+              name: "icons/[name].[ext]",
+              publicPath: "../"
+            }
+          }
+        },
+        {
+          test: /\.css$/,
+          loader: "style-loader!css-loader"
+        },
+        {
+          test: /\.(scss|sass)$/,
+          loader: "style-loader!css-loader!sass-loader"
+        },
+        {
+          test: /\.(js|jsx)$/,
+          exclude: /(node_modules|bower_components)/,
+          loader: "babel-loader",
+          options: {
+            presets: ["@babel/preset-env", "@babel/preset-react"],
+            plugins: [
+              [babelTransformClassPlugin, { loose: true }],
+              "@babel/plugin-syntax-dynamic-import"
+            ]
+          }
+        },
+        {
+          test: /.html$/,
+          loader: "html-loader"
+        }
+      ]
+    },
+
+    plugins: [clean, html],
+    output: {
+      filename: "[name].js",
+      path: path.resolve(__dirname, outputDir),
+      publicPath: ""
+    }
+  };
+  if (mode === "production") {
+    config.plugins.push(
+      new TerserPlugin({
+        parallel: true,
+        terserOptions: {
+          ecma: 6
+        }
+      })
+    );
+  }
+  return config;
+};

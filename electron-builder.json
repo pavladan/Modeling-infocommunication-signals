@@ -1,0 +1,27 @@
+{
+    "appId": "com.modeling-infocommunication-signals.app",
+    "productName": "Modeling Infocommunication Signals",
+    "directories": {
+        "output": "release/"
+    },
+    "asar": true,
+    "asarUnpack": [],
+    "files": [
+        "dist/**/*",
+        "main.js",
+        "node_modules/**/*"
+    ],
+    "win": {
+        "icon": "public/favicon.png",
+        "target": ["portable"]
+    },
+    "mac": {
+        "icon": "public/favicon.png",
+        "target": ["dmg"]
+    },
+    "linux": {
+        "icon": "dist",
+        "target": ["AppImage"]
+    },
+    "extends": null
+}

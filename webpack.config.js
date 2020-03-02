@@ -13,11 +13,12 @@ const outputDir = "./dist";
 
 const clean = new CleanWebpackPlugin([outputDir]);
 const html = new HtmlWebpackPlugin({
-	template: './public/index.html'
-})
+  template: "./public/index.html"
+});
 
 module.exports = env => {
-  const mode = env && env.mode === "prod" ? "production" : "development";
+  if (!process.env.NODE_ENV) process.env.NODE_ENV = "development";
+	const mode = process.env.NODE_ENV;
   const config = {
     mode: mode,
     entry: srcDist + "/index.js",

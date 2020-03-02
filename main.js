@@ -4,27 +4,22 @@ const BrowserWindow = electron.BrowserWindow;
 const ipcMain = electron.ipcMain;
 const path = require("path");
 const isDev = require("electron-is-dev");
-const url = require('url')
+const url = require("url");
 
 app.allowRendererProcessReuse = false;
-
-if (isDev) {
-  require("electron-reload")(__dirname, {
-    electron: path.join(__dirname, "./", "node_modules", ".bin", "electron")
-  });
-}
+process.env["ELECTRON_DISABLE_SECURITY_WARNINGS"] = "true";
 
 let win;
 
 app.on("ready", createWindow);
 app.on("window-all-closed", () => {
-	if (process.platform !== "darwin") {
-		app.quit();
+  if (process.platform !== "darwin") {
+    app.quit();
   }
 });
 app.on("activate", () => {
-	if (win === null) {
-		createWindow();
+  if (win === null) {
+    createWindow();
   }
 });
 
@@ -47,6 +42,8 @@ function createWindow() {
     win.loadURL("http://localhost:8080");
     win.webContents.openDevTools();
     win.showInactive();
+    addElectronReload();
+    addExtensions();
   } else {
     win.loadURL(
       url.format({
@@ -60,4 +57,19 @@ function createWindow() {
   }
 
   win.on("closed", () => (win = null));
+}
+
+function addExtensions() {
+  const {
+    default: installExtension,
+    REACT_DEVELOPER_TOOLS
+  } = require("electron-devtools-installer");
+  installExtension([REACT_DEVELOPER_TOOLS])
+    .then(name => console.log(`Added Extension:  ${name}`))
+    .catch(err => console.log("An error occurred: ", err));
+}
+function addElectronReload() {
+  require("electron-reload")(__dirname, {
+    electron: path.join(__dirname, "./", "node_modules", ".bin", "electron")
+  });
 }

@@ -10,11 +10,13 @@ const { Content, Sider } = Layout;
 export default function App() {
   const [theme, setTheme] = useState("light");
   const [lang, setLang] = useState("en");
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
 
   const onCollapse = state => {
     setCollapsed(state);
-  };
+	};
+	const sidebarWidth = 470;
+
   return (
     <div className="App">
 			<Helmet >
@@ -24,12 +26,13 @@ export default function App() {
       <Layout style={{ minHeight: "100vh" }}>
         <Sider
           collapsible
-          collapsed={collapsed}
+					collapsed={collapsed}
+					collapsedWidth={0}
           onCollapse={onCollapse}
 					theme={theme}
-					width={470}
+					width={sidebarWidth}
         >
-          <Sidebar />
+          <Sidebar style={{width:sidebarWidth}}/>
         </Sider>
         <Layout className="site-layout">
           <Content style={{ margin: "0 16px" }}>

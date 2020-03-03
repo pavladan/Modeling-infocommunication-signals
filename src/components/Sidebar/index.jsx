@@ -23,11 +23,14 @@ import {
   MinusOutlined
 } from "@ant-design/icons";
 import { CirclePicker } from "react-color";
+import SignalEdit from "../SignalEdit";
+import ChainEdit from "../ChainEdit";
+import CalcSettings from '../CalcSettings';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
 
-export default function Sidebar() {
+export default function Sidebar(props) {
   const [signals, setSignals] = useState([
     { name: "sin", id: 0, show: false },
     { name: "cos", id: 1, show: true },
@@ -41,8 +44,12 @@ export default function Sidebar() {
   const [chain, setChain] = useState();
   const [results, setResults] = useState([
     { name: "Result signal 1", show: false, color: "#000", id: 0 },
-    { name: "Result signal 2", show: true, color: "#eee", id: 1 },
+    { name: "Result signal 2", show: true, color: "#eee", id: 1 }
   ]);
+  const [signalEditOpen, setsignalEditOpen] = useState(false);
+	const [chainEditOpen, setchainEditOpen] = useState(false);
+	const [calcSettingsOpen, setClacSettingsOpen] = useState(false);
+
   const signalOptions = signals.map(s => (
     <Option value={s.id} key={s.id} title={s.name}>
       <Row>
@@ -70,6 +77,7 @@ export default function Sidebar() {
       {s.name}
     </Option>
   ));
+
   const toggleShowSignal = (e, id) => {
     e.stopPropagation();
     setSignals(old => {
@@ -123,7 +131,7 @@ export default function Sidebar() {
     });
   };
   return (
-    <div className="Sidebar" style={{ height: "100%", padding: 20 }}>
+    <div className="Sidebar" style={{ ...props.style, height: "100%", padding: 20 }} >
       <div className="Signals">
         <Row gutter={8}>
           <Col>
@@ -136,6 +144,7 @@ export default function Sidebar() {
                   type="default"
                   style={{ padding: 0, marginLeft: 10 }}
                   icon={<PlusCircleFilled style={{ fontSize: 30 }} />}
+                  onClick={_ => setsignalEditOpen(true)}
                 ></Button>
               </Tooltip>
             </Title>
@@ -203,6 +212,7 @@ export default function Sidebar() {
                   type="default"
                   style={{ padding: 0, marginLeft: 10 }}
                   icon={<PlusCircleFilled style={{ fontSize: 30 }} />}
+                  onClick={_ => setchainEditOpen(true)}
                 ></Button>
               </Tooltip>
             </Title>
@@ -271,12 +281,12 @@ export default function Sidebar() {
             </Button>
           </Col>
           <Col>
-            <Button shape="circle" icon={<SettingFilled />}></Button>
+            <Button shape="circle" onClick={_=>setClacSettingsOpen(true)} icon={<SettingFilled />}></Button>
           </Col>
         </Row>
       </div>
-      
-			<div className="Results">
+
+      <div className="Results">
         <Row gutter={8}>
           <Col flex="auto">
             <List
@@ -348,6 +358,15 @@ export default function Sidebar() {
           </Col>
         </Row>
       </div>
+      {signalEditOpen && (
+        <SignalEdit visible close={_ => setsignalEditOpen(false)} />
+      )}
+      {chainEditOpen && (
+        <ChainEdit visible close={_ => setchainEditOpen(false)} />
+      )}
+			{calcSettingsOpen && (
+				<CalcSettings visible close={_=> setClacSettingsOpen(false)} />
+			)}
     </div>
   );
 }

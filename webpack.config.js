@@ -54,7 +54,11 @@ module.exports = env => {
         {
           test: /\.(scss|sass)$/,
           loader: "style-loader!css-loader!sass-loader"
-        },
+				},
+				{
+					test: /\.less$/,
+					loader: 'style-loader!css-loader!less-loader'
+				},
         {
           test: /\.(js|jsx)$/,
           exclude: /(node_modules|bower_components)/,
@@ -62,7 +66,8 @@ module.exports = env => {
           options: {
             presets: ["@babel/preset-env", "@babel/preset-react"],
             plugins: [
-              [babelTransformClassPlugin, { loose: true }],
+							[babelTransformClassPlugin, { loose: true }],
+							["import", { "libraryName": "antd", "libraryDirectory": "es", "style": "css" }],
               "@babel/plugin-syntax-dynamic-import"
             ]
           }

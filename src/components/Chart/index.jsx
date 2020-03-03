@@ -8,7 +8,8 @@ import {
   CartesianGrid,
   Line,
   Brush,
-  Legend
+  Legend,
+  ResponsiveContainer
 } from "recharts";
 
 export default function Chart() {
@@ -44,36 +45,41 @@ export default function Chart() {
     }
   ];
   const rechart = (
-    <LineChart
-      width={400}
-      height={400}
-      data={dataReacharts}
-      margin={{ top: 30, right: 40, left: 10, bottom: 5 }}
-    >
-      <XAxis
-        dataKey="x"
-        type="number"
-        domain={["dataMin", "dataMax"]}
-        tickCount={20}
-        interval={0}
-        label={{ value: "time", position: "right", offset: 10 }}
-        scale="time"
-      />
-      <YAxis
-        type="number"
-        domain={[0, "dataMax"]}
-        label={{ value: "V", position: "top", offset: 10 }}
-        interval="preserveStartEnd"
-				scale={"linear"}
-      />
-      <Tooltip cursor={false} />
-      <Legend verticalAlign="middle" align="right" iconType="circle" height={36} />
-      <CartesianGrid stroke="#f5f5f5" />
-      <Brush dataKey="x" height={20}/>
-      <Line type="monotone" dataKey="y1" stroke="#ff7300" type="linear" />
-      <Line type="monotone" dataKey="y2" stroke="#387908" type="linear" />
-    </LineChart>
+    <ResponsiveContainer width="100%" height="100%">
+      <LineChart
+        data={dataReacharts}
+        margin={{ top: 30, right: 40, left: 10, bottom: 5 }}
+      >
+        <XAxis
+          dataKey="x"
+          type="number"
+          domain={["dataMin", "dataMax"]}
+          tickCount={20}
+          interval={0}
+          label={{ value: "time", position: "right", offset: 10 }}
+          scale="time"
+        />
+        <YAxis
+          type="number"
+          domain={[0, "dataMax"]}
+          label={{ value: "V", position: "top", offset: 10 }}
+          interval="preserveStartEnd"
+          scale={"linear"}
+        />
+        <Tooltip cursor={false} />
+        <Legend
+          verticalAlign="middle"
+          align="right"
+          iconType="circle"
+          height={36}
+        />
+        <CartesianGrid stroke="#f5f5f5" />
+        <Brush dataKey="x" height={20} />
+        <Line type="monotone" dataKey="y1" stroke="#ff7300" type="linear" />
+        <Line type="monotone" dataKey="y2" stroke="#387908" type="linear" />
+      </LineChart>
+    </ResponsiveContainer>
   );
 
-  return <div className="Chart">{rechart}</div>;
+  return <div className="Chart" style={{height:"100%",width:"100%"}}>{rechart}</div>;
 }

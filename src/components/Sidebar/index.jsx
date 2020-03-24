@@ -22,43 +22,49 @@ import {
   LineChartOutlined,
   MinusOutlined
 } from "@ant-design/icons";
-import { CirclePicker } from "react-color";
+import { ChromePicker } from "react-color";
 import SignalEdit from "../SignalEdit";
 import ChainEdit from "../ChainEdit";
-import CalcSettings from '../CalcSettings';
+import CalcSettings from "../CalcSettings";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
 
 export default function Sidebar(props) {
-  const [signals, setSignals] = useState([
-    { name: "sin", id: 0, show: false },
-    { name: "cos", id: 1, show: true },
-    { name: "squar", id: 2, show: false }
-  ]);
-  const [signal, setSignal] = useState();
   const [chains, setChains] = useState([
     { name: "T", id: 0 },
     { name: "C", id: 1 }
   ]);
   const [chain, setChain] = useState();
-  const [results, setResults] = useState([
-    { name: "Result signal 1", show: false, color: "#000", id: 0 },
-    { name: "Result signal 2", show: true, color: "#eee", id: 1 }
-  ]);
-  const [signalEditOpen, setsignalEditOpen] = useState(false);
-	const [chainEditOpen, setchainEditOpen] = useState(false);
-	const [calcSettingsOpen, setClacSettingsOpen] = useState(false);
 
-  const signalOptions = signals.map(s => (
+  const [signalEditOpen, setSignalEditOpen] = useState(true);
+  const [chainEditOpen, setChainEditOpen] = useState(false);
+  const [calcSettingsOpen, setClacSettingsOpen] = useState(false);
+
+	const saveSignal=editedSignal=>{
+
+	}
+  const signalOptions = props.signals.map(s => (
     <Option value={s.id} key={s.id} title={s.name}>
       <Row>
+        <Col>
+          <div
+            className="color"
+            style={{
+              backgroundColor: s.color,
+              borderRadius: "50%",
+              width: 18,
+              height: 18,
+              marginRight: 6
+            }}
+          ></div>
+        </Col>
         <Col flex="auto">{s.name}</Col>
         <Col>
           <span
             className="showIcon"
             style={{ cursor: "pointer" }}
-            onClick={e => toggleShowSignal(e, s.id)}
+            onClick={e => props.toggleShowSignal(e, s.id)}
           >
             {
               <Button
@@ -78,25 +84,6 @@ export default function Sidebar(props) {
     </Option>
   ));
 
-  const toggleShowSignal = (e, id) => {
-    e.stopPropagation();
-    setSignals(old => {
-      return old.map(s => {
-        if (s.id === id) {
-          return { ...s, show: !s.show };
-        }
-        return s;
-      });
-    });
-  };
-  const deleteSignal = _ => {
-    setSignals(old => {
-      const newSignals = old.filter(s => s.id !== signal);
-      const lastSignal = newSignals[newSignals.length - 1];
-      setSignal(lastSignal ? lastSignal.id : undefined);
-      return newSignals;
-    });
-  };
   const deleteChain = _ => {
     setChains(old => {
       const newChains = old.filter(s => s.id !== chain);
@@ -105,33 +92,18 @@ export default function Sidebar(props) {
       return newChains;
     });
   };
-  const changeColorOnResult = (id, color) => {
-    setResults(old => {
-      return old.map(r => {
-        if (r.id === id) {
-          return { ...r, color: color.hex };
-        }
-        return r;
-      });
-    });
-  };
-  const toggleShowResult = id => {
-    setResults(old => {
-      return old.map(r => {
-        if (r.id === id) {
-          return { ...r, show: !r.show };
-        }
-        return r;
-      });
-    });
-  };
-  const deleteResult = id => {
-    setResults(old => {
-      return old.filter(r => r.id !== id);
-    });
-  };
+
   return (
-    <div className="Sidebar" style={{ ...props.style, height: "100%", padding: 20 }} >
+    <div
+      className="Sidebar"
+      style={{
+        ...props.style,
+        height: "100vh",
+        padding: 20,
+        display: "flex",
+        flexDirection: "column"
+      }}
+    >
       <div className="Signals">
         <Row gutter={8}>
           <Col>
@@ -144,7 +116,7 @@ export default function Sidebar(props) {
                   type="default"
                   style={{ padding: 0, marginLeft: 10 }}
                   icon={<PlusCircleFilled style={{ fontSize: 30 }} />}
-                  onClick={_ => setsignalEditOpen(true)}
+                  onClick={_ => setSignalEditOpen(true)}
                 ></Button>
               </Tooltip>
             </Title>
@@ -160,8 +132,8 @@ export default function Sidebar(props) {
               filterOption={(input, option) =>
                 option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
               }
-              value={signal}
-              onChange={e => setSignal(e)}
+              value={props.signal}
+              onChange={props.setSignal}
               notFoundContent={null}
               optionLabelProp="title"
             >
@@ -171,8 +143,9 @@ export default function Sidebar(props) {
           <Col>
             <Tooltip placement="bottom" title="Edit this signal">
               <Button
-                disabled={signal === undefined}
+                disabled={props.signal === undefined}
                 shape="circle"
+								onClick={_ => setSignalEditOpen(props.signals.find(s=>s.id==props.signal))}
                 icon={<EditFilled />}
               ></Button>
             </Tooltip>
@@ -180,7 +153,7 @@ export default function Sidebar(props) {
           <Col>
             <Tooltip placement="bottom" title="Download this signal">
               <Button
-                disabled={signal === undefined}
+                disabled={props.signal === undefined}
                 shape="circle"
                 icon={<DownloadOutlined />}
               ></Button>
@@ -188,9 +161,12 @@ export default function Sidebar(props) {
           </Col>
           <Col>
             <Tooltip placement="bottom" title="Delete this signal">
-              <Popconfirm title="Delete this signal ?" onConfirm={deleteSignal}>
+              <Popconfirm
+                title="Delete this signal ?"
+                onConfirm={props.deleteSignal}
+              >
                 <Button
-                  disabled={signal === undefined}
+                  disabled={props.signal === undefined}
                   shape="circle"
                   icon={<DeleteFilled />}
                 ></Button>
@@ -199,7 +175,7 @@ export default function Sidebar(props) {
           </Col>
         </Row>
       </div>
-      <Divider />
+      <Divider style={{ flex: "0 0 auto" }} />
       <div className="Chains">
         <Row gutter={8}>
           <Col>
@@ -212,7 +188,7 @@ export default function Sidebar(props) {
                   type="default"
                   style={{ padding: 0, marginLeft: 10 }}
                   icon={<PlusCircleFilled style={{ fontSize: 30 }} />}
-                  onClick={_ => setchainEditOpen(true)}
+                  onClick={_ => setChainEditOpen(true)}
                 ></Button>
               </Tooltip>
             </Title>
@@ -267,7 +243,7 @@ export default function Sidebar(props) {
           </Col>
         </Row>
       </div>
-      <Divider />
+      <Divider style={{ flex: "0 0 auto" }} />
       <div className="Calc">
         <Row gutter={8}>
           <Col flex="auto">
@@ -281,92 +257,100 @@ export default function Sidebar(props) {
             </Button>
           </Col>
           <Col>
-            <Button shape="circle" onClick={_=>setClacSettingsOpen(true)} icon={<SettingFilled />}></Button>
+            <Button
+              shape="circle"
+              onClick={_ => setClacSettingsOpen(true)}
+              icon={<SettingFilled />}
+            ></Button>
           </Col>
         </Row>
       </div>
-
-      <div className="Results">
-        <Row gutter={8}>
-          <Col flex="auto">
-            <List
-              header={
-                <Title level={2} style={{ margin: 0 }}>
-                  Results
-                </Title>
-              }
-              dataSource={results}
-              renderItem={item => (
-                <List.Item>
-                  <List.Item.Meta
-                    avatar={
-                      <Popover
-                        trigger="click"
-                        placement="topLeft"
-                        content={
-                          <CirclePicker
-                            color={item.color}
-                            onChangeComplete={e =>
-                              changeColorOnResult(item.id, e)
-                            }
-                          ></CirclePicker>
-                        }
-                      >
-                        <div
-                          className="color"
-                          style={{
-                            backgroundColor: item.color,
-                            borderRadius: "50%",
-                            border: "0.1px solid var(--text)",
-                            width: 22,
-                            height: 22
-                          }}
-                        ></div>
-                      </Popover>
+      <div
+        className="Results"
+        style={{
+          flex: 1,
+          height: 200,
+          display: "flex",
+          flexDirection: "column"
+        }}
+      >
+        <Title level={2} style={{ margin: "12px 0" }}>
+          Results
+        </Title>
+        <List
+          style={{ flex: 1, overflowY: "auto" }}
+          dataSource={props.results}
+          renderItem={item => (
+            <List.Item>
+              <List.Item.Meta
+                avatar={
+                  <Popover
+                    trigger="click"
+                    placement="topLeft"
+                    style={{ padding: 0 }}
+                    content={
+                      <div style={{ margin: "-12px -16px" }}>
+                        <ChromePicker
+                          color={item.color}
+                          onChange={e => props.changeColorOnResult(item.id, e)}
+                          disableAlpha
+                        ></ChromePicker>
+                      </div>
                     }
-                    title={<Text editable>{item.name}</Text>}
-                  ></List.Item.Meta>
-                  <Button
-                    shape="circle"
-                    size="small"
-                    style={{ marginLeft: 5 }}
-                    icon={
-                      item.show ? (
-                        <EyeFilled></EyeFilled>
-                      ) : (
-                        <EyeInvisibleFilled></EyeInvisibleFilled>
-                      )
-                    }
-                    onClick={_ => toggleShowResult(item.id)}
-                  ></Button>
-                  <Button
-                    shape="circle"
-                    size="small"
-                    style={{ marginLeft: 5 }}
-                    icon={<DownloadOutlined></DownloadOutlined>}
-                  ></Button>
-                  <Button
-                    shape="circle"
-                    size="small"
-                    style={{ marginLeft: 5 }}
-                    icon={<MinusOutlined />}
-                    onClick={_ => deleteResult(item.id)}
-                  ></Button>
-                </List.Item>
-              )}
-            />
-          </Col>
-        </Row>
+                  >
+                    <div
+                      className="color"
+                      style={{
+                        backgroundColor: item.color,
+                        borderRadius: "50%",
+                        width: 22,
+                        height: 22,
+                        marginLeft: 1
+                      }}
+                    ></div>
+                  </Popover>
+                }
+                title={<Text editable>{item.name}</Text>}
+              ></List.Item.Meta>
+              <Button
+                shape="circle"
+                size="small"
+                style={{ marginLeft: 5 }}
+                icon={
+                  item.show ? (
+                    <EyeFilled></EyeFilled>
+                  ) : (
+                    <EyeInvisibleFilled></EyeInvisibleFilled>
+                  )
+                }
+                onClick={_ => props.toggleShowResult(item.id)}
+              ></Button>
+              <Button
+                shape="circle"
+                size="small"
+                style={{ marginLeft: 5 }}
+                icon={<DownloadOutlined></DownloadOutlined>}
+              ></Button>
+              <Button
+                shape="circle"
+                size="small"
+                style={{ marginLeft: 5 }}
+                icon={<MinusOutlined />}
+                onClick={_ => props.deleteResult(item.id)}
+              ></Button>
+            </List.Item>
+          )}
+        />
       </div>
       {signalEditOpen && (
-        <SignalEdit visible close={_ => setsignalEditOpen(false)} />
+        <SignalEdit signal={typeof signalEditOpen === 'object' ? signalEditOpen : undefined} save={props.editSignal} visible close={_ => setSignalEditOpen(false)} />
       )}
       {chainEditOpen && (
-        <ChainEdit visible close={_ => setchainEditOpen(false)} />
+        <ChainEdit visible close={_ => setChainEditOpen(false)} />
       )}
-			{calcSettingsOpen && (
-				<CalcSettings visible close={_=> setClacSettingsOpen(false)} />
-			)}
+      {calcSettingsOpen && (
+        <CalcSettings visible close={_ => setClacSettingsOpen(false)} />
+      )}
     </div>
   );
 }

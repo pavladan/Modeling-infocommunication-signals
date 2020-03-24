@@ -12,74 +12,82 @@ import {
   ResponsiveContainer
 } from "recharts";
 
-export default function Chart() {
-  const dataReacharts = [
-    {
-      x: 0,
-      y1: 4000,
-      y2: 2400
-    },
-    {
-      x: 1,
-      y1: 3000,
-      y2: 1398
-    },
-    {
-      x: 2,
-      y1: 2000,
-      y2: 9800
-    },
-    {
-      x: 5,
-      y1: 3780,
-      y2: 2908
-    },
-    {
-      x: 9,
-      y1: 2780,
-      y2: 3908
-    },
-    {
-      x: 12,
-      y1: 1000
-    }
-  ];
+export default function Chart(props) {
+  const mergeCharts = allCharts => {
+    const obj = {};
+    allCharts.forEach(chart => {
+      chart.data.forEach(data => {
+        const x = data.x;
+        const y = data.y;
+        if (x !== undefined && y !== undefined) {
+          if (!obj[x]) obj[x] = {};
+          obj[x][chart.id] = y;
+        }
+      });
+    });
+    return Object.entries(obj)
+      .map(e => ({ x: +e[0], ...e[1] }))
+      .sort((a, b) => a.x - b.x);
+  };
+  const data =
+    props.charts && props.charts.length > 0 ? mergeCharts(props.charts) : [];
+  const lines =
+    props.charts && props.charts.length > 0
+      ? props.charts.map(
+          l =>
+            l.show && (
+              <Line
+                type="linear"
+                dataKey={l.id || 0}
+                stroke={l.color || "#000"}
+                connectNulls
+                name={l.name || ""}
+                key={l.id || 0}
+                dot={props.preview ? false : true}
+              />
+            )
+        )
+      : null;
   const rechart = (
     <ResponsiveContainer width="100%" height="100%">
       <LineChart
-        data={dataReacharts}
+        data={data}
         margin={{ top: 30, right: 40, left: 10, bottom: 5 }}
       >
         <XAxis
           dataKey="x"
           type="number"
-          domain={["dataMin", "dataMax"]}
-          tickCount={20}
-          interval={0}
-          label={{ value: "time", position: "right", offset: 10 }}
-          scale="time"
+          domain={[0, "dataMax"]}
+          interval='preserveStartEnd'
+					label={{ value: "μs", position: "right", offset: 0 }}
+          scale="linear"
         />
         <YAxis
           type="number"
-          domain={[0, "dataMax"]}
           label={{ value: "V", position: "top", offset: 10 }}
-          interval="preserveStartEnd"
+					interval='preserveStartEnd'
           scale={"linear"}
         />
-        <Tooltip cursor={false} />
-        <Legend
-          verticalAlign="middle"
-          align="right"
-          iconType="circle"
-          height={36}
-        />
-        <CartesianGrid stroke="#f5f5f5" />
-        <Brush dataKey="x" height={20} />
-        <Line type="monotone" dataKey="y1" stroke="#ff7300" type="linear" />
-        <Line type="monotone" dataKey="y2" stroke="#387908" type="linear" />
+        {!props.preview ? <Tooltip cursor={false} /> : null}
+
+        {props.charts.every(c => c.name) && (
+          <Legend
+            verticalAlign="middle"
+            align="right"
+            iconType="circle"
+            height={36}
+          />
+        )}
+        <CartesianGrid stroke={props.preview ? "#f5f5f5" : "#e1e4e7"} />
+        {props.preview ? <Brush dataKey="x" height={20} /> : null}
+        {lines}
       </LineChart>
     </ResponsiveContainer>
   );
 
-  return <div className="Chart" style={{height:"100%",width:"100%"}}>{rechart}</div>;
+  return (
+    <div className="Chart" style={{ height: "100%", width: "100%" }}>
+      {rechart}
+    </div>
+  );
 }

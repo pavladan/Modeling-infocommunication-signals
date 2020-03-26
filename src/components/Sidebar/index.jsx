@@ -41,9 +41,6 @@ export default function Sidebar(props) {
   const [chainEditOpen, setChainEditOpen] = useState(false);
   const [calcSettingsOpen, setClacSettingsOpen] = useState(false);
 
-	const saveSignal=editedSignal=>{
-
-	}
   const signalOptions = props.signals.map(s => (
     <Option value={s.id} key={s.id} title={s.name}>
       <Row>

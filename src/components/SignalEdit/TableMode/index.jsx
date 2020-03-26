@@ -11,40 +11,14 @@ import {
   Tooltip
 } from "antd";
 import { QuestionCircleOutlined, CloseOutlined } from "@ant-design/icons";
-import convertSignalLeap from "../../../helpers/convertSingleLeap";
-import convertModulatedLeap from "../../../helpers/convertModulatedLeap";
-import additionSignals from "../../../helpers/additionSignals";
-
 import { MathFieldComponent } from "react-mathlive";
-import fixed from "../../../helpers/fixed";
 
 export default function TableMode(props) {
-  const [singleLeap, setSingleLeap] = useState([]);
-  const [modulatedLeap, setModulatedLeap] = useState([]);
+  const [singleLeap, setSingleLeap] = useState(props.leaps.filter(l=>l.amplitude === undefined));
+  const [modulatedLeap, setModulatedLeap] = useState(props.leaps.filter(l=>l.amplitude !== undefined));
 
   useEffect(() => {
-    if (singleLeap.length > 0 || modulatedLeap.length > 0) {
-      let data = [];
-      let delay = 1;
-      [...singleLeap, ...modulatedLeap].forEach(e => {
-        delay = Math.max(delay, e.delay);
-      });
-      const range = delay > 6 ? fixed(delay * (4 / 3)) : 10;
-      const numberPoints = 1000;
-      for (let i = 0; i < singleLeap.length; i++) {
-        data.push(convertSignalLeap({ ...singleLeap[i], range, numberPoints }));
-      }
-      for (let i = 0; i < modulatedLeap.length; i++) {
-        data.push(
-          convertModulatedLeap({
-            ...modulatedLeap[i],
-            range,
-            numberPoints
-          })
-        );
-      }
-      props.setChartData(additionSignals(data));
-    }
+		props.setLeaps([...singleLeap, ...modulatedLeap]);
   }, [singleLeap, modulatedLeap]);
 
   return (
@@ -172,7 +146,7 @@ const EditableCell = ({
   };
 
   const save = async e => {
-		inputRef.current.blur();
+    inputRef.current.blur();
     try {
       const values = await form.validateFields();
       Object.keys(values).forEach(key => {
@@ -182,9 +156,7 @@ const EditableCell = ({
       });
       toggleEdit();
       handleSave({ ...record, ...values });
-    } catch (errInfo) {
-      console.log("Save failed:", errInfo);
-    }
+    } catch (errInfo) {}
   };
 
   let childNode = children;
@@ -193,7 +165,7 @@ const EditableCell = ({
     childNode = editing ? (
       <Form.Item
         style={{
-					margin: 0
+          margin: 0
         }}
         name={dataIndex}
       >
@@ -204,7 +176,7 @@ const EditableCell = ({
           decimalSeparator=","
           onPressEnter={save}
           onBlur={save}
-					style={{ width: "100%"}}
+          style={{ width: "100%" }}
         />
       </Form.Item>
     ) : (
@@ -306,14 +278,14 @@ const EditableTable = props => {
         columns={columns}
         pagination={false}
         scroll={{ y: 200 }}
-				size="small"
-				locale={{ emptyText: <span></span> }}
+        size="small"
+        locale={{ emptyText: <span></span> }}
       />
       <Button
         onClick={handleAdd}
         type="primary"
         style={{
-          margin: '16px 0'
+          margin: "16px 0"
         }}
       >
         Add

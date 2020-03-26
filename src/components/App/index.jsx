@@ -14,7 +14,7 @@ export default function App() {
   const [signals, setSignals] = useState([
     {
       name: "sin",
-      id: 0,
+      id: 's0',
       show: false,
       color: "red",
       data: [
@@ -22,11 +22,22 @@ export default function App() {
         { x: 1, y: 4 },
         { x: 3, y: 3 },
         { x: 4, y: 6 }
-      ]
+      ],
+      initial: {
+        type: "table",
+        leaps: [
+          {
+            amplitude: 1,
+            delay: 0,
+            fraquency: 1,
+            phase: -90
+          }
+        ]
+      }
     },
     {
       name: "cos",
-      id: 1,
+      id: 's1',
       show: true,
       color: "blue",
       data: [
@@ -34,11 +45,22 @@ export default function App() {
         { x: 1, y: 2 },
         { x: 2, y: 3 },
         { x: 3, y: 4 }
-      ]
+      ],
+      initial: {
+        type: "table",
+        leaps: [
+          {
+            amplitude: 1,
+            delay: 0,
+            fraquency: 1,
+            phase: 0
+          }
+        ]
+      }
     },
     {
-      name: "squar",
-      id: 2,
+      name: "leap",
+      id: 's2',
       show: false,
       color: "green",
       data: [
@@ -47,13 +69,16 @@ export default function App() {
         { x: 2, y: 7 },
         { x: 3, y: 0 },
         { x: 4, y: 7 }
-      ]
+      ],
+      initial: {
+        type: "none"
+      }
     }
   ]);
   const [signal, setSignal] = useState();
   const [results, setResults] = useState([
-    { name: "Result signal 1", show: false, color: "#000", id: 3, data: [] },
-    { name: "Result signal 2", show: true, color: "#eee", id: 4, data: [] }
+    { name: "Result signal 1", show: false, color: "#000", id: 'r0', data: [{x:2,y:4},{x:8,y:-5}] },
+    { name: "Result signal 2", show: true, color: "#eee", id: 'r1', data: [] }
   ]);
   const onCollapse = state => {
     setCollapsed(state);
@@ -91,7 +116,7 @@ export default function App() {
   };
   const editSignal = newSignal => {
     setSignals(old => {
-      if (newSignal.id) {
+      if (newSignal.id !== undefined) {
         return old.map(s => {
           if (s.id === newSignal.id) {
             return newSignal;
@@ -99,16 +124,20 @@ export default function App() {
           return s;
         });
       } else {
-				const ids = old.map(s=>s.id);
-				return [...old,{...newSignal, id: genNewId(ids)}]
+        const ids = old.map(s => s.id);
+				const newId = genNewId(ids,'s');
+        setSignal(newId);
+        return [...old, { ...newSignal, id: newId }];
       }
     });
-	};
-	const genNewId=ids=>{
-		let newId = 0;
-		while (ids.some(id=>id===newId)) {newId++;}
-		return newId;
-	}
+  };
+  const genNewId = (ids, preId) => {
+    let newId = 0;
+    while (ids.some(id => +id.replace(preId, '') === newId)) {
+      newId++;
+    }
+    return preId + newId;
+  };
   const changeColorOnResult = (id, color) => {
     setResults(old => {
       return old.map(r => {

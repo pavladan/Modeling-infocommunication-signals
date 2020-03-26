@@ -11,14 +11,23 @@ import {
   Legend,
   ResponsiveContainer
 } from "recharts";
+import calcLeaps from "../../helpers/calcLeaps";
 
 export default function Chart(props) {
   const mergeCharts = allCharts => {
     const obj = {};
     allCharts.forEach(chart => {
-      chart.data.forEach(data => {
-        const x = data.x;
-        const y = data.y;
+      let data = chart.data || [];
+      if (chart.initial && chart.initial.type === "table") {
+        data = calcLeaps({
+          leaps: chart.initial.leaps,
+          range: 10,
+          numberPoints: 50
+        });
+      }
+      data.forEach(e => {
+        const x = e.x;
+        const y = e.y;
         if (x !== undefined && y !== undefined) {
           if (!obj[x]) obj[x] = {};
           obj[x][chart.id] = y;
@@ -58,14 +67,14 @@ export default function Chart(props) {
           dataKey="x"
           type="number"
           domain={[0, "dataMax"]}
-          interval='preserveStartEnd'
-					label={{ value: "μs", position: "right", offset: 0 }}
+          interval="preserveStartEnd"
+          label={{ value: "μs", position: "right", offset: 0 }}
           scale="linear"
         />
         <YAxis
           type="number"
           label={{ value: "V", position: "top", offset: 10 }}
-					interval='preserveStartEnd'
+          interval="preserveStartEnd"
           scale={"linear"}
         />
         {!props.preview ? <Tooltip cursor={false} /> : null}

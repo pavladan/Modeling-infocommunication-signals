@@ -10,13 +10,14 @@ import {
   Col,
   Tooltip
 } from "antd";
-import { QuestionCircleOutlined } from "@ant-design/icons";
+import { QuestionCircleOutlined, CloseOutlined } from "@ant-design/icons";
 import convertSignalLeap from "../../../helpers/convertSingleLeap";
 import convertModulatedLeap from "../../../helpers/convertModulatedLeap";
 import additionSignals from "../../../helpers/additionSignals";
 
 import { MathFieldComponent } from "react-mathlive";
 import fixed from "../../../helpers/fixed";
+
 export default function TableMode(props) {
   const [singleLeap, setSingleLeap] = useState([]);
   const [modulatedLeap, setModulatedLeap] = useState([]);
@@ -28,7 +29,7 @@ export default function TableMode(props) {
       [...singleLeap, ...modulatedLeap].forEach(e => {
         delay = Math.max(delay, e.delay);
       });
-			const range= delay > 6 ? fixed(delay*(4/3)) : 10
+      const range = delay > 6 ? fixed(delay * (4 / 3)) : 10;
       const numberPoints = 1000;
       for (let i = 0; i < singleLeap.length; i++) {
         data.push(convertSignalLeap({ ...singleLeap[i], range, numberPoints }));
@@ -41,7 +42,7 @@ export default function TableMode(props) {
             numberPoints
           })
         );
-			}
+      }
       props.setChartData(additionSignals(data));
     }
   }, [singleLeap, modulatedLeap]);
@@ -77,11 +78,11 @@ export default function TableMode(props) {
           data={singleLeap}
           setData={setSingleLeap}
           dataTemplate={[
-            { id: "amplitude", value: 0 },
+            { id: "amplitude", value: 1 },
             { id: "delay", value: 0 }
           ]}
           columnNames={[
-            { id: "amplitude", name: "Amplitude [A]"},
+            { id: "amplitude", name: "Amplitude [A]" },
             { id: "delay", name: "Delay [τ], μs", min: 0 }
           ]}
         />
@@ -114,15 +115,15 @@ export default function TableMode(props) {
           data={modulatedLeap}
           setData={setModulatedLeap}
           dataTemplate={[
-            { id: "amplitude", value: 0 },
+            { id: "amplitude", value: 1 },
             { id: "delay", value: 0 },
-            { id: "fraquency", value: 0 },
+            { id: "fraquency", value: 1 },
             { id: "phase", value: 0 }
           ]}
           columnNames={[
             { id: "amplitude", name: "Amplitude [A]" },
-            { id: "delay", name: "Delay [τ], μs", min:0 },
-            { id: "fraquency", name: "Fraquency [ω], MGhz", min:0 },
+            { id: "delay", name: "Delay [τ], μs", min: 0 },
+            { id: "fraquency", name: "Fraquency [ω], MGhz", min: 0 },
             { id: "phase", name: "Initial phase [φ], grad" }
           ]}
         />
@@ -150,8 +151,8 @@ const EditableCell = ({
   children,
   dataIndex,
   record,
-	handleSave,
-	min,
+  handleSave,
+  min,
   ...restProps
 }) => {
   const [editing, setEditing] = useState(false);
@@ -171,8 +172,14 @@ const EditableCell = ({
   };
 
   const save = async e => {
+		inputRef.current.blur();
     try {
       const values = await form.validateFields();
+      Object.keys(values).forEach(key => {
+        if (!values[key]) {
+          values[key] = 0;
+        }
+      });
       toggleEdit();
       handleSave({ ...record, ...values });
     } catch (errInfo) {
@@ -186,17 +193,19 @@ const EditableCell = ({
     childNode = editing ? (
       <Form.Item
         style={{
-          margin: 0
+					margin: 0
         }}
         name={dataIndex}
-        rules={[
-          {
-            required: true,
-            message: `${title} is required.`
-          }
-        ]}
       >
-        <InputNumber ref={inputRef} step={1} min={min !==undefined ? min : -Infinity} decimalSeparator=',' onPressEnter={save} onBlur={save} />
+        <InputNumber
+          ref={inputRef}
+          step={1}
+          min={min !== undefined ? min : -Infinity}
+          decimalSeparator=","
+          onPressEnter={save}
+          onBlur={save}
+					style={{ width: "100%"}}
+        />
       </Form.Item>
     ) : (
       <div
@@ -237,7 +246,7 @@ const EditableTable = props => {
     props.setData(oldDataSouce => {
       const newData = [...oldDataSouce];
       const index = newData.findIndex(item => row.key === item.key);
-			const item = newData[index];
+      const item = newData[index];
       newData.splice(index, 1, { ...item, ...row });
       return newData;
     });
@@ -253,29 +262,36 @@ const EditableTable = props => {
     title: n.name,
     dataIndex: n.id,
     editable: true,
-		ellipsis: "true",
-		min:n.min,
+    ellipsis: "true",
+    min: n.min,
     onCell: record => ({
       record,
       editable: true,
       title: n.name,
       dataIndex: n.id,
       ellipsis: "true",
-			handleSave: handleSave,
-			min:n.min
+      handleSave: handleSave,
+      min: n.min
     })
   }));
 
   columns.push({
     title: "",
     dataIndex: "operation",
+    width: 40,
+    align: "right",
     render: (text, record) =>
       props.data.length >= 1 ? (
         <Popconfirm
           title="Sure to delete?"
           onConfirm={() => handleDelete(record.key)}
         >
-          <a>Delete</a>
+          <Button
+            icon={<CloseOutlined />}
+            type="default"
+            shape="circle"
+            size="small"
+          ></Button>
         </Popconfirm>
       ) : null
   });
@@ -286,17 +302,18 @@ const EditableTable = props => {
         tableLayout="fixed"
         components={components}
         rowClassName={() => "editable-row"}
-        bordered
         dataSource={props.data}
         columns={columns}
         pagination={false}
         scroll={{ y: 200 }}
+				size="small"
+				locale={{ emptyText: <span></span> }}
       />
       <Button
         onClick={handleAdd}
         type="primary"
         style={{
-          marginTop: 16
+          margin: '16px 0'
         }}
       >
         Add

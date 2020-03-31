@@ -37,7 +37,7 @@ export default function Sidebar(props) {
   ]);
   const [chain, setChain] = useState();
 
-  const [signalEditOpen, setSignalEditOpen] = useState(true);
+  const [signalEditOpen, setSignalEditOpen] = useState(false);
   const [chainEditOpen, setChainEditOpen] = useState(false);
   const [calcSettingsOpen, setClacSettingsOpen] = useState(false);
 
@@ -127,7 +127,7 @@ export default function Sidebar(props) {
               placeholder="Select a signal"
               optionFilterProp="children"
               filterOption={(input, option) =>
-                option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                option.title.toLowerCase().indexOf(input.toLowerCase()) >= 0
               }
               value={props.signal}
               onChange={props.setSignal}
@@ -142,7 +142,11 @@ export default function Sidebar(props) {
               <Button
                 disabled={props.signal === undefined}
                 shape="circle"
-								onClick={_ => setSignalEditOpen(props.signals.find(s=>s.id==props.signal))}
+                onClick={_ =>
+                  setSignalEditOpen(
+                    props.signals.find(s => s.id == props.signal)
+                  )
+                }
                 icon={<EditFilled />}
               ></Button>
             </Tooltip>
@@ -340,7 +344,14 @@ export default function Sidebar(props) {
         />
       </div>
       {signalEditOpen && (
-        <SignalEdit signal={typeof signalEditOpen === 'object' ? signalEditOpen : undefined} save={props.editSignal} visible close={_ => setSignalEditOpen(false)} />
+        <SignalEdit
+          signal={
+            typeof signalEditOpen === "object" ? signalEditOpen : undefined
+          }
+          save={props.editSignal}
+          visible
+          close={_ => setSignalEditOpen(false)}
+        />
       )}
       {chainEditOpen && (
         <ChainEdit visible close={_ => setChainEditOpen(false)} />

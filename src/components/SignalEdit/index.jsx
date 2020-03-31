@@ -5,6 +5,7 @@ import TableMode from "./TableMode";
 import Chart from "../Chart";
 import calcLeaps from "../../helpers/calcLeaps";
 import fixed from "../../helpers/fixed";
+import FunctionMode from "./FunctionMode";
 
 const { Title } = Typography;
 const { TabPane } = Tabs;
@@ -13,13 +14,15 @@ export default function SignalEdit(props) {
     props.signal || {
       name: "New signal",
       data: [],
-      initial: { type: "table", leaps: [] },
+      initial: { type: "function", leaps: [] },
       color: "#000",
       show: true
     }
   );
   const [leaps, setLeaps] = useState(signal.initial.leaps || []);
-  const [activeTab, setActiveTab] = useState(signal.initial.type !=='table' ? "1" : "0");
+  const [activeTab, setActiveTab] = useState(
+    signal.initial.type !== "table" ? "1" : "0"
+  );
 
   const getPreviewData = () => {
     if (activeTab === "0") {
@@ -118,7 +121,9 @@ export default function SignalEdit(props) {
               <TabPane tab="Table" key="0">
                 <TableMode leaps={leaps} setLeaps={setLeaps} />
               </TabPane>
-              <TabPane tab="Function" key="1"></TabPane>
+              <TabPane tab="Function" key="1">
+								<FunctionMode />
+							</TabPane>
               <TabPane tab="Import" key="2"></TabPane>
             </Tabs>
           </Col>

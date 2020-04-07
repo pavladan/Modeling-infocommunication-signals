@@ -20,6 +20,7 @@ module.exports = env => {
   if (!process.env.NODE_ENV) process.env.NODE_ENV = "development";
 	const mode = process.env.NODE_ENV;
   const config = {
+		devtool: 'source-map',
     mode: mode,
     entry: srcDist + "/index.js",
     resolve: {

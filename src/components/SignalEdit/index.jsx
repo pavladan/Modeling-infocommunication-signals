@@ -71,7 +71,7 @@ export default function SignalEdit(props) {
         zIndex={1}
         okText="Save"
         onOk={handleSave}
-        width={"80%"}
+        width={"95%"}
         title={
           <div style={{ position: "relative" }}>
             <Title

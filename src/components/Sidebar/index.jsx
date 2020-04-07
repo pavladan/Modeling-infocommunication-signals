@@ -38,7 +38,7 @@ export default function Sidebar(props) {
   const [chain, setChain] = useState();
 
   const [signalEditOpen, setSignalEditOpen] = useState(false);
-  const [chainEditOpen, setChainEditOpen] = useState(false);
+  const [chainEditOpen, setChainEditOpen] = useState(true);
   const [calcSettingsOpen, setClacSettingsOpen] = useState(false);
 
   const signalOptions = props.signals.map(s => (

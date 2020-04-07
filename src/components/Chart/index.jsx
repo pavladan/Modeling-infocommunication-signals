@@ -88,7 +88,6 @@ export default function Chart(props) {
           />
         )}
         <CartesianGrid stroke={props.preview ? "#f5f5f5" : "#e1e4e7"} />
-        {props.preview ? <Brush dataKey="x" height={20} /> : null}
         {lines}
       </LineChart>
     </ResponsiveContainer>

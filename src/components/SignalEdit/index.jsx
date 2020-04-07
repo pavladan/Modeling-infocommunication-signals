@@ -14,14 +14,14 @@ export default function SignalEdit(props) {
     props.signal || {
       name: "New signal",
       data: [],
-      initial: { type: "function", leaps: [] },
+      initial: { type: "table", leaps: [] },
       color: "#000",
       show: true
     }
   );
   const [leaps, setLeaps] = useState(signal.initial.leaps || []);
   const [activeTab, setActiveTab] = useState(
-    signal.initial.type !== "table" ? "1" : "0"
+    signal.initial.type == "table" ? "0" : "1"
   );
 
   const getPreviewData = () => {

@@ -4,27 +4,11 @@ import katex from "katex";
 import "katex/dist/katex.min.css";
 import { InputNumber, Popover, Button, Table } from "antd";
 
-export default function OperatorTransferFunction() {
+export default function OperatorTransferFunction(props) {
   const [inputParentElements, setInputParentElements] = useState([]);
-  const [variables, setVariables] = useState({
-    Cz: 1,
-    Nz1: 1,
-    Nz2: 1,
-    Nz3: 1,
-    Nz4: 1,
-    az1s: {},
-    az2e: {},
-    az3x: {},
-    az4y: {},
-    nz1s: {},
-    nz2e: {},
-    nz3x: {},
-    nz4y: {},
-    wz2e: {},
-    wz4y: {},
-  });
+
   const setVariable = (name, value) => {
-    setVariables((old) => {
+    props.setVariables((old) => {
       if (old[name] !== value) return { ...old, [name]: value };
       return old;
     });
@@ -48,49 +32,80 @@ export default function OperatorTransferFunction() {
     }
   }, []);
   useEffect(() => {
-    console.log(variables);
-  }, [variables]);
+    console.log(props.variables);
+  }, [props.variables]);
   const inputElements = inputParentElements.map(({ element, name }, i) => {
-    if (name.slice(0, 1) === "N" || name.slice(0, 1) === "C") {
+    if (name.slice(0, 1) === "N") {
       element.style.padding = 0;
-      return (
-        <SimpleInputPortal
+      const changeValue = (value) => {
+        setVariable(name, value);
+        Object.keys(props.variables).forEach((varName) => {
+          if (varName.slice(2, 3) === name.slice(2, 3) && name !== varName) {
+            const trimedVar = {};
+            for (let i = 1; i <= value; i++) {
+              trimedVar[i] = props.variables[varName][i] || null;
+            }
+
+            setVariable(varName, trimedVar);
+          }
+        });
+      };
+      return ReactDOM.createPortal(
+        <PrimeNumbersInput
           key={i}
-          value={variables[name]}
-          onBlur={(value) => setVariable(name, value)}
-          el={element}
-        ></SimpleInputPortal>
+          value={props.variables[name]}
+          onChange={changeValue}
+        ></PrimeNumbersInput>,
+        element
       );
-    } else if (name.slice(0, 1) === "a" || name.slice(0, 1) === "w"|| name.slice(0, 1) === "n") {
-      const curNameN = "Nz" + name.slice(2, 3);
-      return (
-        <TableValueViewPortal
+    } else if (name.slice(0, 1) === "C") {
+      return ReactDOM.createPortal(
+        <SimpleNumbersInput
           key={i}
-          value={variables[name]}
+          value={props.variables[name]}
+          onChange={(value) => setVariable(name, value)}
+        ></SimpleNumbersInput>,
+        element
+      );
+    } else if (
+      name.slice(0, 1) === "a" ||
+      name.slice(0, 1) === "w" ||
+      name.slice(0, 1) === "n"
+    ) {
+      const curNameN = "N" + name.slice(1, 3);
+      return ReactDOM.createPortal(
+        <TableValueView
+          key={i}
+          value={props.variables[name]}
           onChange={(v) => setVariable(name, v)}
-          number={variables[curNameN]}
-          style={{ position: "relative", zIndex: 1, width: 60 }}
-          el={element}
-        />
+          style={{ position: "relative", zIndex: 1 }}
+        />,
+        element
       );
     }
     return null;
   });
   return (
-    <div ref={katexRef} className="OperatorTransferFunction">
+    <div ref={katexRef} className="OperatorTransferFunction" style={{overflow:'auto', padding:'10px 0px'}}>
       {inputElements}
     </div>
   );
 }
 
-function SimpleInputPortal(props) {
-  return ReactDOM.createPortal(
+function PrimeNumbersInput(props) {
+  const [value, setValue] = useState(props.value);
+  return (
     <InputNumber
       min={1}
+      max={9999}
       precision={0}
-      defaultValue={props.value}
+      value={value}
       onBlur={(e) => {
-        props.onBlur(+e.target.value);
+        props.onChange(+e.target.value || 1);
+      }}
+      onChange={(e) => {
+        if (e === null) setValue(1);
+        else setValue(e);
       }}
       onPressEnter={(e) => {
         e.target.blur();
@@ -99,21 +114,49 @@ function SimpleInputPortal(props) {
       size="small"
       style={{ position: "relative", zIndex: 1, width: 45 }}
       tabIndex={0}
-    ></InputNumber>,
-    props.el
+    ></InputNumber>
+  );
+}
+function SimpleNumbersInput(props) {
+  return (
+    <InputNumber
+      value={props.value}
+      onBlur={(e) => {
+
+      }}
+      onChange={(e) => {
+        if (e === null) props.onChange(1);
+        else props.onChange(e);
+      }}
+      parser={(e) => {
+        if (e.slice(-1) === ",") return e.slice(0, -1) + ".";
+        return e;
+      }}
+      onPressEnter={(e) => {
+        e.target.blur();
+      }}
+      size="small"
+      style={{ position: "relative", zIndex: 1, width: 45 }}
+      tabIndex={0}
+    ></InputNumber>
   );
 }
 
-function TableValueViewPortal(props) {
+function TableValueView(props) {
   const [visible, setVisible] = useState(false);
-
-  const hide = () => {
-    setVisible(false);
-  };
 
   const handleVisibleChange = (visible) => {
     setVisible(visible);
   };
+  const data = Object.keys(props.value).map((key, i) => {
+    const value = props.value[key];
+    return {
+      key,
+      i: key,
+      value,
+    };
+  });
+
   const columns = [
     {
       title: "Index",
@@ -125,48 +168,57 @@ function TableValueViewPortal(props) {
       render: (_, el) => {
         return (
           <InputNumber
-            defaultValue={el.value}
-            onBlur={(event) => {
-              props.onChange({ ...props.value, [el.i]: event.target.value });
-            }}
+            value={el.value}
             onPressEnter={(e) => e.target.blur()}
+            parser={(e) => {
+              if (e.slice(-1) === ",") return e.slice(0, -1) + ".";
+              return e;
+            }}
+            tabIndex={0}
+            style={{ borderColor: el.value === null && "red" }}
+            onChange={(e) => {
+							props.onChange({
+                ...props.value,
+                [el.i]: e
+              });
+            }}
           ></InputNumber>
         );
       },
     },
   ];
 
-  const data = [...Array(props.number)].map((e, i) => {
-    let value;
-    if (props.value[i + 1] !== undefined) value = props.value[i + 1];
-    return {
-      key: i,
-      i: i + 1,
-      value,
-    };
-  });
   const popoverContent = (
-    <>
-      <Table columns={columns} dataSource={data} size="small" />
-      <a onClick={hide}>Close</a>
-    </>
+    <Table
+      columns={columns}
+      dataSource={data}
+      size="small"
+      pagination={false}
+    />
   );
-  return ReactDOM.createPortal(
+  return (
     <Popover
       content={popoverContent}
       trigger="click"
       visible={visible}
       onVisibleChange={handleVisibleChange}
+      placement="top"
+      style={{ maxHeight: 200, overflowY: "auto" }}
     >
       <Button
         type="primary"
         size="small"
         type="default"
-        style={{ ...props.style }}
+        style={{
+          ...props.style,
+          overflow: "hidden",
+          maxWidth: 100,
+          minWidth: 10,
+        }}
+        danger={data.some((d) => d.value === null)}
       >
-        {props.buttonText}
+        {data.map((e) => (e.value !== null ? e.value : " ")).join(",")}
       </Button>
-    </Popover>,
-    props.el
+    </Popover>
   );
 }

@@ -16,7 +16,7 @@ export default function SignalEdit(props) {
       data: [],
       initial: { type: "table", leaps: [] },
       color: "#000",
-      show: true
+      show: true,
     }
   );
   const [leaps, setLeaps] = useState(signal.initial.leaps || []);
@@ -27,21 +27,21 @@ export default function SignalEdit(props) {
   const getPreviewData = () => {
     if (activeTab === "0") {
       let delay = 0;
-      leaps.forEach(e => {
+      leaps.forEach((e) => {
         delay = Math.max(delay, e.delay);
       });
       const range = delay > 6 ? fixed(delay * (4 / 3)) : 10;
       const numberPoints = 1000;
       const data = calcLeaps({
         leaps,
-        range,
-        numberPoints
+        end: range,
+        numberPoints,
       });
       return data;
     }
     return [];
   };
-  const handleSave = _ => {
+  const handleSave = (_) => {
     const exitSignal = signal;
     exitSignal.show = true;
     exitSignal.data = getPreviewData();
@@ -49,12 +49,12 @@ export default function SignalEdit(props) {
       case "0":
         exitSignal.initial = {
           type: "table",
-          leaps
+          leaps,
         };
         break;
       default:
         exitSignal.initial = {
-          type: "none"
+          type: "none",
         };
     }
     props.save(exitSignal);
@@ -77,7 +77,7 @@ export default function SignalEdit(props) {
             <Title
               level={3}
               editable={{
-                onChange: e => setSignal(old => ({ ...old, name: e }))
+                onChange: (e) => setSignal((old) => ({ ...old, name: e })),
               }}
               style={{ textAlign: "center", maxWidth: "60%", margin: "0 20%" }}
             >
@@ -91,7 +91,9 @@ export default function SignalEdit(props) {
                 <div style={{ margin: "-12px -16px" }}>
                   <ChromePicker
                     color={signal.color}
-                    onChange={e => setSignal(old => ({ ...old, color: e.hex }))}
+                    onChange={(e) =>
+                      setSignal((old) => ({ ...old, color: e.hex }))
+                    }
                     disableAlpha
                   ></ChromePicker>
                 </div>
@@ -108,7 +110,7 @@ export default function SignalEdit(props) {
                   borderRadius: "50%",
                   width: 24,
                   height: 24,
-                  cursor: "pointer"
+                  cursor: "pointer",
                 }}
               ></div>
             </Popover>
@@ -122,8 +124,8 @@ export default function SignalEdit(props) {
                 <TableMode leaps={leaps} setLeaps={setLeaps} />
               </TabPane>
               <TabPane tab="Function" key="1">
-								<FunctionMode />
-							</TabPane>
+                <FunctionMode />
+              </TabPane>
               <TabPane tab="Import" key="2"></TabPane>
             </Tabs>
           </Col>
@@ -136,8 +138,8 @@ export default function SignalEdit(props) {
                   id: 0,
                   show: true,
                   color: signal.color,
-                  data: getPreviewData()
-                }
+                  data: getPreviewData(),
+                },
               ]}
             />
           </Col>

@@ -8,10 +8,7 @@ export default function OperatorTransferFunction(props) {
   const [inputParentElements, setInputParentElements] = useState([]);
 
   const setVariable = (name, value) => {
-    props.setVariables((old) => {
-      if (old[name] !== value) return { ...old, [name]: value };
-      return old;
-    });
+    props.setVariable({[name]:value});
   };
   const katexRef = useCallback((node) => {
     if (node) {

@@ -192,7 +192,8 @@ export default function App() {
             toggleShowSignal={toggleShowSignal}
             deleteSignal={deleteSignal}
             signals={signals}
-            editSignal={editSignal}
+						editSignal={editSignal}
+						genNewId={genNewId}
           />
         </Sider>
         <Layout className="site-layout">

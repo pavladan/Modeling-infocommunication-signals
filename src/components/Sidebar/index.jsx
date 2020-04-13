@@ -9,7 +9,7 @@ import {
   Tooltip,
   List,
   Popover,
-  Popconfirm
+  Popconfirm,
 } from "antd";
 import {
   PlusCircleFilled,
@@ -20,7 +20,7 @@ import {
   DeleteFilled,
   SettingFilled,
   LineChartOutlined,
-  MinusOutlined
+  MinusOutlined,
 } from "@ant-design/icons";
 import { ChromePicker } from "react-color";
 import SignalEdit from "../SignalEdit";
@@ -32,16 +32,53 @@ const { Option } = Select;
 
 export default function Sidebar(props) {
   const [chains, setChains] = useState([
-    { name: "T", id: 0 },
-    { name: "C", id: 1 }
+    {
+      name: "T",
+      id: 'c0',
+      variables: {
+        Cz: -3.3,
+        Nz1: 2,
+        Nz2: 1,
+        Nz3: 1,
+        Nz4: 1,
+        az1s: { 1: 3, 2: 9 },
+        az2e: { 1: 2 },
+        az3x: { 1: 6 },
+        az4y: { 1: 6 },
+        nz1s: { 1: 6, 2:null },
+        nz2e: { 1: 7 },
+        nz3x: { 1: 4 },
+        nz4y: { 1: 6 },
+        wz2e: { 1: 3 },
+        wz4y: { 1: 6 },
+      },
+    }
   ]);
   const [chain, setChain] = useState();
 
-  const [signalEditOpen, setSignalEditOpen] = useState(true);
+  const [signalEditOpen, setSignalEditOpen] = useState(false);
   const [chainEditOpen, setChainEditOpen] = useState(false);
   const [calcSettingsOpen, setClacSettingsOpen] = useState(false);
 
-  const signalOptions = props.signals.map(s => (
+	const editChain = newChain => {
+    setChains(old => {
+      if (newChain.id !== undefined) {
+        return old.map(s => {
+          if (s.id === newChain.id) {
+            return newChain;
+          }
+          return s;
+        });
+      } else {
+        const ids = old.map(s => s.id);
+				const newId = props.genNewId(ids,'c');
+        setChain(newId);
+        return [...old, { ...newChain, id: newId }];
+      }
+    });
+	};
+	
+  const signalOptions = props.signals.map((s) => (
     <Option value={s.id} key={s.id} title={s.name}>
       <Row>
         <Col>
@@ -52,7 +89,7 @@ export default function Sidebar(props) {
               borderRadius: "50%",
               width: 18,
               height: 18,
-              marginRight: 6
+              marginRight: 6,
             }}
           ></div>
         </Col>
@@ -61,7 +98,7 @@ export default function Sidebar(props) {
           <span
             className="showIcon"
             style={{ cursor: "pointer" }}
-            onClick={e => props.toggleShowSignal(e, s.id)}
+            onClick={(e) => props.toggleShowSignal(e, s.id)}
           >
             {
               <Button
@@ -75,15 +112,15 @@ export default function Sidebar(props) {
       </Row>
     </Option>
   ));
-  const chainOptions = chains.map(s => (
+  const chainOptions = chains.map((s) => (
     <Option value={s.id} key={s.id} title={s.name}>
       {s.name}
     </Option>
   ));
 
-  const deleteChain = _ => {
-    setChains(old => {
-      const newChains = old.filter(s => s.id !== chain);
+  const deleteChain = (_) => {
+    setChains((old) => {
+      const newChains = old.filter((s) => s.id !== chain);
       const lastChain = newChains[newChains.length - 1];
       setChain(lastChain ? lastChain.id : undefined);
       return newChains;
@@ -98,7 +135,7 @@ export default function Sidebar(props) {
         height: "100vh",
         padding: 20,
         display: "flex",
-        flexDirection: "column"
+        flexDirection: "column",
       }}
     >
       <div className="Signals">
@@ -113,7 +150,7 @@ export default function Sidebar(props) {
                   type="default"
                   style={{ padding: 0, marginLeft: 10 }}
                   icon={<PlusCircleFilled style={{ fontSize: 30 }} />}
-                  onClick={_ => setSignalEditOpen(true)}
+                  onClick={(_) => setSignalEditOpen(true)}
                 ></Button>
               </Tooltip>
             </Title>
@@ -142,9 +179,9 @@ export default function Sidebar(props) {
               <Button
                 disabled={props.signal === undefined}
                 shape="circle"
-                onClick={_ =>
+                onClick={(_) =>
                   setSignalEditOpen(
-                    props.signals.find(s => s.id == props.signal)
+                    props.signals.find((s) => s.id == props.signal)
                   )
                 }
                 icon={<EditFilled />}
@@ -189,7 +226,7 @@ export default function Sidebar(props) {
                   type="default"
                   style={{ padding: 0, marginLeft: 10 }}
                   icon={<PlusCircleFilled style={{ fontSize: 30 }} />}
-                  onClick={_ => setChainEditOpen(true)}
+                  onClick={(_) => setChainEditOpen(true)}
                 ></Button>
               </Tooltip>
             </Title>
@@ -206,7 +243,7 @@ export default function Sidebar(props) {
                 option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
               }
               value={chain}
-              onChange={e => setChain(e)}
+              onChange={(e) => setChain(e)}
               notFoundContent={null}
               optionLabelProp="title"
             >
@@ -218,7 +255,12 @@ export default function Sidebar(props) {
               <Button
                 disabled={chain === undefined}
                 shape="circle"
-                icon={<EditFilled />}
+								icon={<EditFilled />}
+								onClick={(_) =>
+                  setChainEditOpen(
+                    chains.find((s) => s.id == chain)
+                  )
+                }
               ></Button>
             </Tooltip>
           </Col>
@@ -260,7 +302,7 @@ export default function Sidebar(props) {
           <Col>
             <Button
               shape="circle"
-              onClick={_ => setClacSettingsOpen(true)}
+              onClick={(_) => setClacSettingsOpen(true)}
               icon={<SettingFilled />}
             ></Button>
           </Col>
@@ -272,7 +314,7 @@ export default function Sidebar(props) {
           flex: 1,
           height: 200,
           display: "flex",
-          flexDirection: "column"
+          flexDirection: "column",
         }}
       >
         <Title level={2} style={{ margin: "12px 0" }}>
@@ -281,7 +323,7 @@ export default function Sidebar(props) {
         <List
           style={{ flex: 1, overflowY: "auto" }}
           dataSource={props.results}
-          renderItem={item => (
+          renderItem={(item) => (
             <List.Item>
               <List.Item.Meta
                 avatar={
@@ -293,7 +335,9 @@ export default function Sidebar(props) {
                       <div style={{ margin: "-12px -16px" }}>
                         <ChromePicker
                           color={item.color}
-                          onChange={e => props.changeColorOnResult(item.id, e)}
+                          onChange={(e) =>
+                            props.changeColorOnResult(item.id, e)
+                          }
                           disableAlpha
                         ></ChromePicker>
                       </div>
@@ -306,7 +350,7 @@ export default function Sidebar(props) {
                         borderRadius: "50%",
                         width: 22,
                         height: 22,
-                        marginLeft: 1
+                        marginLeft: 1,
                       }}
                     ></div>
                   </Popover>
@@ -324,7 +368,7 @@ export default function Sidebar(props) {
                     <EyeInvisibleFilled></EyeInvisibleFilled>
                   )
                 }
-                onClick={_ => props.toggleShowResult(item.id)}
+                onClick={(_) => props.toggleShowResult(item.id)}
               ></Button>
               <Button
                 shape="circle"
@@ -337,7 +381,7 @@ export default function Sidebar(props) {
                 size="small"
                 style={{ marginLeft: 5 }}
                 icon={<MinusOutlined />}
-                onClick={_ => props.deleteResult(item.id)}
+                onClick={(_) => props.deleteResult(item.id)}
               ></Button>
             </List.Item>
           )}
@@ -350,14 +394,21 @@ export default function Sidebar(props) {
           }
           save={props.editSignal}
           visible
-          close={_ => setSignalEditOpen(false)}
+          close={(_) => setSignalEditOpen(false)}
         />
       )}
       {chainEditOpen && (
-        <ChainEdit visible close={_ => setChainEditOpen(false)} />
+        <ChainEdit
+          chain={
+            typeof chainEditOpen === "object" ? chainEditOpen : undefined
+					}
+					save={editChain}
+					visible
+          close={(_) => setChainEditOpen(false)}
+        />
       )}
       {calcSettingsOpen && (
-        <CalcSettings visible close={_ => setClacSettingsOpen(false)} />
+        <CalcSettings visible close={(_) => setClacSettingsOpen(false)} />
       )}
     </div>
   );

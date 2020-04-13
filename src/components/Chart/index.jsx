@@ -18,50 +18,55 @@ import { InputNumber } from "antd";
 export default function Chart(props) {
   const [data, setData] = useState([]);
   const [viewRange, setViewRange] = useState([0, 20]);
-  const [numberPoints, setNumberPoints] = useState(1000);
+  const [numberPoints, setNumberPoints] = useState(400);
   const chartRef = useRef(null);
 
   useEffect(() => {
-    const interval = 200;
-    let direction;
-    let timeout;
-    const onWheel = (e) => {
-      if (
-        e.path.some((p) => p.classList && p.classList.contains("chart-signals"))
-      ) {
-        if (e.deltaY) {
-          if (!direction) {
-            direction = "y";
-            timeout = setTimeout(() => {
-              direction = undefined;
-            }, interval);
-          } else if (direction === "y") {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => {
-              direction = undefined;
-            }, interval);
-            zoomChart(e.deltaY);
+    props.staticRange !== undefined &&
+      setViewRange((old) => [old[0], props.staticRange]);
+  }, [props.staticRange]);
+
+  useEffect(() => {
+    if (!props.preview) {
+      const interval = 200;
+      let direction;
+      let timeout;
+      const onWheel = (e) => {
+        if (chartRef.current.container.contains(e.target)) {
+          if (e.deltaY) {
+            if (!direction) {
+              direction = "y";
+              timeout = setTimeout(() => {
+                direction = undefined;
+              }, interval);
+            } else if (direction === "y") {
+              clearTimeout(timeout);
+              timeout = setTimeout(() => {
+                direction = undefined;
+              }, interval);
+              zoomChart(e.deltaY);
+            }
+          }
+          if (e.deltaX) {
+            if (!direction) {
+              direction = "x";
+              timeout = setTimeout(() => {
+                direction = undefined;
+              }, interval);
+            } else if (direction === "x") {
+              clearTimeout(timeout);
+              timeout = setTimeout(() => {
+                direction = undefined;
+              }, interval);
+              moveChart(e.deltaX);
+            }
           }
         }
-        if (e.deltaX) {
-          if (!direction) {
-            direction = "x";
-            timeout = setTimeout(() => {
-              direction = undefined;
-            }, interval);
-          } else if (direction === "x") {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => {
-              direction = undefined;
-            }, interval);
-            moveChart(e.deltaX);
-          }
-        }
-      }
-    };
-    document.addEventListener("mousewheel", onWheel);
+      };
+      document.addEventListener("mousewheel", onWheel);
+    }
     return () => {
-      document.removeEventListener("mousewheel", onWheel);
+      !props.preview && document.removeEventListener("mousewheel", onWheel);
     };
   }, []);
   useEffect(() => {
@@ -73,14 +78,14 @@ export default function Chart(props) {
       })
     );
   }, [props.charts, viewRange, numberPoints]);
-  const calc = ({ start = 0, end = 200, numberPoints = 1000 } = {}) => {
+  const calc = ({ start, end, numberPoints }) => {
     if (!props.charts || props.charts.length === 0) return [];
     const allCharts = props.charts;
     const obj = {};
     allCharts
       .filter((c) => c.show)
       .forEach((chart) => {
-        let data = chart.data || [];
+        let data = [];
         if (chart.initial && chart.initial.type === "table") {
           data = calcLeaps({
             leaps: chart.initial.leaps,
@@ -88,6 +93,8 @@ export default function Chart(props) {
             end,
             numberPoints,
           });
+        } else if (chart.data) {
+          data = chart.data.filter(({ x }) => x >= start && x < end);
         }
         data.forEach((e) => {
           const x = e.x;
@@ -160,7 +167,7 @@ export default function Chart(props) {
                 name={l.name || ""}
                 key={l.id || 0}
                 dot={false}
-                isAnimationActive={false}
+                isAnimationActive={!!props.preview}
               />
             )
         )
@@ -170,9 +177,9 @@ export default function Chart(props) {
       <LineChart
         data={data}
         margin={{ top: 30, right: 40, left: 10, bottom: 5 }}
-        onMouseDown={handleMove}
+        onMouseDown={!props.preview && handleMove}
         ref={chartRef}
-        className="chart-signals"
+        style={{ userSelect: "none" }}
       >
         <XAxis
           allowDataOverflow
@@ -186,7 +193,7 @@ export default function Chart(props) {
         <YAxis
           allowDataOverflow
           type="number"
-          domain={["dataMin", "dataMax"]}
+          domain={[(dataMin) => dataMin - 0.1, (dataMax) => dataMax + 0.1]}
           label={{ value: "V", position: "top", offset: 10 }}
           interval="preserveStartEnd"
           scale={"linear"}
@@ -218,35 +225,66 @@ export default function Chart(props) {
       }}
     >
       <div style={{ flex: 1 }}>{rechart}</div>
-      <div
-        style={{
-          flex: 0,
-          display: "flex",
-          justifyContent: "space-between",
-          marginBottom: 20,
-        }}
-      >
-        <InputNumber
-          size="small"
-          min={0}
-          value={viewRange[0]}
-          onBlur={(e) => setViewRange((old) => [+e.target.value, old[1]])}
-          onPressEnter={(e) => e.target.blur()}
-        ></InputNumber>
-        <InputNumber
-          size="small"
-          precision={0}
-          value={numberPoints}
-          onBlur={(e) => setNumberPoints(+e.target.value)}
-          onPressEnter={(e) => e.target.blur()}
-        ></InputNumber>
-        <InputNumber
-          size="small"
-          value={viewRange[1]}
-          onBlur={(e) => setViewRange((old) => [old[0], +e.target.value])}
-          onPressEnter={(e) => e.target.blur()}
-        ></InputNumber>
-      </div>
+      {!props.preview && (
+        <div
+          style={{
+            flex: 0,
+            display: "flex",
+            justifyContent: "space-between",
+            marginBottom: 20,
+          }}
+        >
+          <InputNumber
+            size="small"
+            value={viewRange[0]}
+            onPressEnter={(e) => e.target.blur()}
+            onChange={(e) => {
+              if (typeof e === "number" && e >= 0) {
+                setViewRange((old) => {
+                  if (e < old[1]) return [e, old[1]];
+                  return old;
+                });
+              }
+            }}
+            parser={(e) => {
+              if (e.slice(-1) === ",") return e.slice(0, -1) + ".";
+              return e;
+            }}
+          ></InputNumber>
+          <InputNumber
+            size="small"
+            value={numberPoints}
+            onChange={(e) => {
+              if (
+                typeof e === "number" &&
+                e > 0 &&
+                e < 10000 &&
+                Number.isInteger(e)
+              ) {
+                setNumberPoints(e);
+              } else if (e===null) setNumberPoints(500)
+            }}
+            onPressEnter={(e) => e.target.blur()}
+          ></InputNumber>
+          <InputNumber
+            size="small"
+            value={viewRange[1]}
+            onPressEnter={(e) => e.target.blur()}
+            onChange={(e) => {
+              if (typeof e === "number" && e >= 0) {
+                setViewRange((old) => {
+                  if (e > old[0]) return [old[0], e];
+                  return old;
+                });
+              }
+            }}
+            parser={(e) => {
+              if (e.slice(-1) === ",") return e.slice(0, -1) + ".";
+              return e;
+            }}
+          ></InputNumber>
+        </div>
+      )}
     </div>
   );
 }

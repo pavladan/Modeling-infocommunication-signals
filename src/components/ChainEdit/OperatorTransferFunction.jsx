@@ -31,9 +31,6 @@ export default function OperatorTransferFunction(props) {
       setInputParentElements(elements);
     }
   }, []);
-  useEffect(() => {
-    console.log(props.variables);
-  }, [props.variables]);
   const inputElements = inputParentElements.map(({ element, name }, i) => {
     if (name.slice(0, 1) === "N") {
       element.style.padding = 0;
@@ -86,31 +83,28 @@ export default function OperatorTransferFunction(props) {
     return null;
   });
   return (
-    <div ref={katexRef} className="OperatorTransferFunction" style={{overflow:'auto', padding:'10px 0px'}}>
+    <div
+      ref={katexRef}
+      className="OperatorTransferFunction"
+      style={{ overflow: "auto", padding: "10px 0px" }}
+    >
       {inputElements}
     </div>
   );
 }
 
 function PrimeNumbersInput(props) {
-  const [value, setValue] = useState(props.value);
   return (
     <InputNumber
-      min={1}
-      max={9999}
-      precision={0}
-      value={value}
-      onBlur={(e) => {
-        props.onChange(+e.target.value || 1);
-      }}
+      value={props.value}
       onChange={(e) => {
-        if (e === null) setValue(1);
-        else setValue(e);
+        if (typeof e === "number" && e >= 1 && e < 10000 && Number.isInteger(e))
+          props.onChange(e);
+        else if (e === null) props.onChange(1);
       }}
       onPressEnter={(e) => {
         e.target.blur();
       }}
-      step={1}
       size="small"
       style={{ position: "relative", zIndex: 1, width: 45 }}
       tabIndex={0}
@@ -121,12 +115,10 @@ function SimpleNumbersInput(props) {
   return (
     <InputNumber
       value={props.value}
-      onBlur={(e) => {
-
-      }}
       onChange={(e) => {
-        if (e === null) props.onChange(1);
-        else props.onChange(e);
+        if (typeof e === "number") {
+          props.onChange(e);
+        } else if (e === null) props.onChange(1);
       }}
       parser={(e) => {
         if (e.slice(-1) === ",") return e.slice(0, -1) + ".";
@@ -177,10 +169,12 @@ function TableValueView(props) {
             tabIndex={0}
             style={{ borderColor: el.value === null && "red" }}
             onChange={(e) => {
-							props.onChange({
-                ...props.value,
-                [el.i]: e
-              });
+              if (typeof e === "number") {
+                props.onChange({
+                  ...props.value,
+                  [el.i]: e,
+                });
+              }
             }}
           ></InputNumber>
         );

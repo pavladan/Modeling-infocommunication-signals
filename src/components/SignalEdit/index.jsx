@@ -3,7 +3,6 @@ import { Modal, Typography, Tabs, Popover, Row, Col } from "antd";
 import { ChromePicker } from "react-color";
 import TableMode from "./TableMode";
 import Chart from "../Chart";
-import calcLeaps from "../../helpers/calcLeaps";
 import fixed from "../../helpers/fixed";
 import FunctionMode from "./FunctionMode";
 
@@ -13,7 +12,6 @@ export default function SignalEdit(props) {
   const [signal, setSignal] = useState(
     props.signal || {
       name: "New signal",
-      data: [],
       initial: { type: "table", leaps: [] },
       color: "#000",
       show: true,
@@ -24,39 +22,27 @@ export default function SignalEdit(props) {
     signal.initial.type == "table" ? "0" : "1"
   );
 
-  const getPreviewData = () => {
+  const getTabInitial = () => {
+    if (activeTab === "0") {
+      return { type: "table", leaps };
+    }
+    return {};
+  };
+  const getEndSignal = () => {
     if (activeTab === "0") {
       let delay = 0;
       leaps.forEach((e) => {
         delay = Math.max(delay, e.delay);
       });
-      const range = delay > 6 ? fixed(delay * (4 / 3)) : 10;
-      const numberPoints = 1000;
-      const data = calcLeaps({
-        leaps,
-        end: range,
-        numberPoints,
-      });
-      return data;
+      const range = delay > 5 ? fixed(delay * 2) : 10;
+      return range;
     }
-    return [];
+    return 0;
   };
   const handleSave = (_) => {
     const exitSignal = signal;
     exitSignal.show = true;
-    exitSignal.data = getPreviewData();
-    switch (activeTab) {
-      case "0":
-        exitSignal.initial = {
-          type: "table",
-          leaps,
-        };
-        break;
-      default:
-        exitSignal.initial = {
-          type: "none",
-        };
-    }
+    exitSignal.initial = getTabInitial();
     props.save(exitSignal);
     props.close();
   };
@@ -132,13 +118,14 @@ export default function SignalEdit(props) {
           <Col span={24} md={12}>
             <Chart
               preview={true}
+              staticRange={getEndSignal()}
               charts={[
                 {
                   name: false,
                   id: 0,
                   show: true,
                   color: signal.color,
-                  data: getPreviewData(),
+                  initial: getTabInitial(),
                 },
               ]}
             />

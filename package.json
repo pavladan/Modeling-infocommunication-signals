@@ -7,6 +7,8 @@
     "start": "concurrently \"webpack-dev-server\" \"wait-on http://localhost:8080 && electron .\"",
     "browser": "webpack-dev-server --open",
     "build": "cross-env NODE_ENV=production webpack",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist",
     "release:mac": "npm run build && electron-builder build --mac",
     "release:windows": "npm run build && electron-builder build --windows"
   },
@@ -19,7 +21,7 @@
   "bugs": {
     "url": "https://github.com/pavladan/Modeling-infocommunication-signals/issues"
   },
-  "homepage": "https://github.com/pavladan/Modeling-infocommunication-signals#readme",
+  "homepage": "https://pavladan/github.io/Modeling-infocommunication-signals",
   "devDependencies": {
     "@babel/core": "^7.8.4",
     "@babel/plugin-proposal-class-properties": "^7.8.3",
@@ -35,6 +37,7 @@
     "electron-devtools-installer": "^2.2.4",
     "electron-reload": "^1.5.0",
     "file-loader": "^5.1.0",
+    "gh-pages": "^2.2.0",
     "html-loader": "^0.5.5",
     "html-webpack-plugin": "^3.2.0",
     "less": "^2.7.3",

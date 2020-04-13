@@ -79,17 +79,17 @@ export default function App() {
   ]);
   const [signal, setSignal] = useState();
   const [results, setResults] = useState([
-    {
-      name: "Result signal 1",
-      show: false,
-      color: "#000",
-      id: "r0",
-      data: [
-        { x: 2, y: 4 },
-        { x: 8, y: -5 },
-      ],
-    },
-    { name: "Result signal 2", show: true, color: "#eee", id: "r1", data: [] },
+    // {
+    //   name: "Result signal 1",
+    //   show: false,
+    //   color: "#000",
+    //   id: "r0",
+    //   data: [
+    //     { x: 2, y: 4 },
+    //     { x: 8, y: -5 },
+    //   ],
+    // },
+    // { name: "Result signal 2", show: true, color: "#eee", id: "r1", data: [] },
   ]);
   const [sidebarWidth, setSidebarWidth] = useState(0);
 

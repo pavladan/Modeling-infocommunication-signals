@@ -29,7 +29,7 @@ export default function CalcSettings(props) {
         ]}
       >
         <Form name="settings" wrapperCol={{ flex: "auto" }}>
-          <Form.Item label="Display interval" required>
+          {/* <Form.Item label="Display interval" required>
             <Input placeholder="Enter interval" suffix="µs"></Input>
           </Form.Item>
           <Form.Item
@@ -37,7 +37,7 @@ export default function CalcSettings(props) {
             required
           >
             <InputNumber min={1} style={{ width: "100%" }}></InputNumber>
-          </Form.Item>
+          </Form.Item> */}
           <Form.Item label="Chain frequency" required>
             <Input placeholder="Enter frequiency" suffix="MHs"></Input>
           </Form.Item>

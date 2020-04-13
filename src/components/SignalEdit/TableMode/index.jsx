@@ -146,7 +146,7 @@ const EditableCell = ({
     );
   }
 
-  return <td {...restProps}>{childNode}</td>;
+  return <td {...restProps} >{childNode}</td>;
 };
 
 const EditableTable = (props) => {

@@ -115,7 +115,7 @@ export default function SignalEdit(props) {
               <TabPane tab="Import" key="2"></TabPane>
             </Tabs>
           </Col>
-          <Col span={24} md={12}>
+          <Col span={24} md={12} style={{minHeight:200}}>
             <Chart
               preview={true}
               staticRange={getEndSignal()}

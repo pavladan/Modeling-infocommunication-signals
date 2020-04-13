@@ -18,8 +18,10 @@ import { InputNumber } from "antd";
 export default function Chart(props) {
   const [data, setData] = useState([]);
   const [viewRange, setViewRange] = useState([0, 20]);
-  const [numberPoints, setNumberPoints] = useState(400);
+	const [numberPoints, setNumberPoints] = useState(400);
+	const [moving, setMoving] = useState(false)
   const chartRef = useRef(null);
+	
 
   useEffect(() => {
     props.staticRange !== undefined &&
@@ -27,42 +29,42 @@ export default function Chart(props) {
   }, [props.staticRange]);
 
   useEffect(() => {
+		const interval = 200;
+		let direction;
+		let timeout;
+		const onWheel = (e) => {
+			if (chartRef.current.container && chartRef.current.container.contains(e.target)) {
+				if (e.deltaY) {
+					if (!direction) {
+						direction = "y";
+						timeout = setTimeout(() => {
+							direction = undefined;
+						}, interval);
+					} else if (direction === "y") {
+						clearTimeout(timeout);
+						timeout = setTimeout(() => {
+							direction = undefined;
+						}, interval);
+						zoomChart(e.deltaY);
+					}
+				}
+				if (e.deltaX) {
+					if (!direction) {
+						direction = "x";
+						timeout = setTimeout(() => {
+							direction = undefined;
+						}, interval);
+					} else if (direction === "x") {
+						clearTimeout(timeout);
+						timeout = setTimeout(() => {
+							direction = undefined;
+						}, interval);
+						moveChart(e.deltaX);
+					}
+				}
+			}
+		};
     if (!props.preview) {
-      const interval = 200;
-      let direction;
-      let timeout;
-      const onWheel = (e) => {
-        if (chartRef.current.container.contains(e.target)) {
-          if (e.deltaY) {
-            if (!direction) {
-              direction = "y";
-              timeout = setTimeout(() => {
-                direction = undefined;
-              }, interval);
-            } else if (direction === "y") {
-              clearTimeout(timeout);
-              timeout = setTimeout(() => {
-                direction = undefined;
-              }, interval);
-              zoomChart(e.deltaY);
-            }
-          }
-          if (e.deltaX) {
-            if (!direction) {
-              direction = "x";
-              timeout = setTimeout(() => {
-                direction = undefined;
-              }, interval);
-            } else if (direction === "x") {
-              clearTimeout(timeout);
-              timeout = setTimeout(() => {
-                direction = undefined;
-              }, interval);
-              moveChart(e.deltaX);
-            }
-          }
-        }
-      };
       document.addEventListener("mousewheel", onWheel);
     }
     return () => {
@@ -142,7 +144,7 @@ export default function Chart(props) {
     });
   };
   const handleMove = (_, downEvent) => {
-    downEvent.preventDefault();
+		setMoving(true)
     let startX = downEvent.clientX;
     const onMove = (moveEvent) => {
       const offsetX = startX - moveEvent.clientX;
@@ -151,7 +153,8 @@ export default function Chart(props) {
     };
     document.addEventListener("mousemove", onMove);
     document.addEventListener("mouseup", (_) => {
-      document.removeEventListener("mousemove", onMove);
+			document.removeEventListener("mousemove", onMove);
+			setMoving(false)
     });
   };
   const lines =
@@ -172,14 +175,14 @@ export default function Chart(props) {
             )
         )
       : null;
-  const rechart = (
-    <ResponsiveContainer width="100%" height="100%">
+  const rechart =  (
+    <ResponsiveContainer width="100%" height="100%" minWidth={110} minHeight={110}>
       <LineChart
         data={data}
         margin={{ top: 30, right: 40, left: 10, bottom: 5 }}
         onMouseDown={!props.preview && handleMove}
         ref={chartRef}
-        style={{ userSelect: "none" }}
+        style={{ userSelect: "none", cursor: moving ? 'grabbing' : 'grab' }}
       >
         <XAxis
           allowDataOverflow

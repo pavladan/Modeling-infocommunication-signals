@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "katex/dist/katex.min.css";
 import { Modal, Typography, Tabs } from "antd";
 import OperatorTransferFunction from "./OperatorTransferFunction";
+
 const { Title } = Typography;
 const { TabPane } = Tabs;
 export default function ChainEdit(props) {
@@ -10,20 +11,20 @@ export default function ChainEdit(props) {
       name: "New chain",
       variables: {
         Cz: 1,
-        Nz1: 1,
-        Nz2: 1,
-        Nz3: 1,
-        Nz4: 1,
-        az1s: { 1: null },
-        az2e: { 1: null },
-        az3x: { 1: null },
-        az4y: { 1: null },
-        nz1s: { 1: null },
-        nz2e: { 1: null },
-        nz3x: { 1: null },
-        nz4y: { 1: null },
-        wz2e: { 1: null },
-        wz4y: { 1: null },
+        N1: 1,
+        N2: 1,
+        N3: 1,
+        N4: 1,
+        a1s: { 1: null },
+        a2e: { 1: null },
+        a3x: { 1: null },
+        a4y: { 1: null },
+        n1s: { 1: null },
+        n2e: { 1: null },
+        n3x: { 1: null },
+        n4y: { 1: null },
+        w2e: { 1: null },
+        w4y: { 1: null },
       },
     }
   );

@@ -26,6 +26,6 @@ export default ({ leaps = [], start = 0, end, numberPoints }) => {
       }
     }
     data.push({ x, y });
-  }
+	}
   return data;
 };

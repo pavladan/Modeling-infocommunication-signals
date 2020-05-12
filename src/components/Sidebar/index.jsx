@@ -26,6 +26,7 @@ import { ChromePicker } from "react-color";
 import SignalEdit from "../SignalEdit";
 import ChainEdit from "../ChainEdit";
 import CalcSettings from "../CalcSettings";
+import calcReaction from "../../helpers/calcReaction";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -34,25 +35,25 @@ export default function Sidebar(props) {
   const [chains, setChains] = useState([
     {
       name: "T",
-      id: 'c0',
+      id: "c0",
       variables: {
         Cz: -3.3,
-        Nz1: 2,
-        Nz2: 1,
-        Nz3: 1,
-        Nz4: 1,
-        az1s: { 1: 3, 2: 9 },
-        az2e: { 1: 2 },
-        az3x: { 1: 6 },
-        az4y: { 1: 6 },
-        nz1s: { 1: 6, 2:null },
-        nz2e: { 1: 7 },
-        nz3x: { 1: 4 },
-        nz4y: { 1: 6 },
-        wz2e: { 1: 3 },
-        wz4y: { 1: 6 },
+        N1: 2,
+        N2: 1,
+        N3: 1,
+        N4: 1,
+        a1s: { 1: 3, 2: 9 },
+        a2e: { 1: 2 },
+        a3x: { 1: 6 },
+        a4y: { 1: 6 },
+        n1s: { 1: 6, 2: null },
+        n2e: { 1: 7 },
+        n3x: { 1: 4 },
+        n4y: { 1: 6 },
+        w2e: { 1: 3 },
+        w4y: { 1: 6 },
       },
-    }
+    },
   ]);
   const [chain, setChain] = useState();
 
@@ -60,24 +61,24 @@ export default function Sidebar(props) {
   const [chainEditOpen, setChainEditOpen] = useState(false);
   const [calcSettingsOpen, setClacSettingsOpen] = useState(false);
 
-	const editChain = newChain => {
-    setChains(old => {
+  const editChain = (newChain) => {
+    setChains((old) => {
       if (newChain.id !== undefined) {
-        return old.map(s => {
+        return old.map((s) => {
           if (s.id === newChain.id) {
             return newChain;
           }
           return s;
         });
       } else {
-        const ids = old.map(s => s.id);
-				const newId = props.genNewId(ids,'c');
+        const ids = old.map((s) => s.id);
+        const newId = props.genNewId(ids, "c");
         setChain(newId);
         return [...old, { ...newChain, id: newId }];
       }
     });
-	};
-	
+  };
+
   const signalOptions = props.signals.map((s) => (
     <Option value={s.id} key={s.id} title={s.name}>
       <Row>
@@ -127,6 +128,17 @@ export default function Sidebar(props) {
     });
   };
 
+  const calculate = () => {
+    console.log(props.signals.find((e) => e.id === props.signal));
+    console.log(chains.find((e) => chain === e.id));
+    if (!props.signal || !chain) {
+      return;
+    }
+    calcReaction(
+      props.signals.find((e) => e.id === props.signal).data,
+      chains.find((e) => chain === e.id).variables
+    );
+  };
   return (
     <div
       className="Sidebar"
@@ -255,11 +267,9 @@ export default function Sidebar(props) {
               <Button
                 disabled={chain === undefined}
                 shape="circle"
-								icon={<EditFilled />}
-								onClick={(_) =>
-                  setChainEditOpen(
-                    chains.find((s) => s.id == chain)
-                  )
+                icon={<EditFilled />}
+                onClick={(_) =>
+                  setChainEditOpen(chains.find((s) => s.id == chain))
                 }
               ></Button>
             </Tooltip>
@@ -295,6 +305,7 @@ export default function Sidebar(props) {
               shape="round"
               block
               icon={<LineChartOutlined />}
+              onClick={calculate}
             >
               Calculate
             </Button>
@@ -399,11 +410,9 @@ export default function Sidebar(props) {
       )}
       {chainEditOpen && (
         <ChainEdit
-          chain={
-            typeof chainEditOpen === "object" ? chainEditOpen : undefined
-					}
-					save={editChain}
-					visible
+          chain={typeof chainEditOpen === "object" ? chainEditOpen : undefined}
+          save={editChain}
+          visible
           close={(_) => setChainEditOpen(false)}
         />
       )}

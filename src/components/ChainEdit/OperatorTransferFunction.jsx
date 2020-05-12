@@ -13,7 +13,7 @@ export default function OperatorTransferFunction(props) {
   const katexRef = useCallback((node) => {
     if (node) {
       katex.render(
-        `K\\left(P\\right)=\\frac{G\\left(P\\right)}{CV\\left(P\\right)}=\\frac{\\prod ^{\\colorbox{none}{Nz3}}_{x\\mathop{=}1}\\left(P+\\colorbox{none}{az3x}\\right)^{\\colorbox{none}{nz3x}}\\cdot \\prod ^{\\colorbox{none}{Nz4}}_{y=1}\\left(P^2+2\\colorbox{none}{az4y}P+\\colorbox{none}{az4y}^2+\\colorbox{none}{wz4y}^2\\right)^{\\colorbox{none}{nz4y}}}{\\colorbox{none}{Cz}\\prod ^{\\colorbox{none}{Nz1}}_{s=1}\\left(P+\\colorbox{none}{az1s}\\right)^{\\colorbox{none}{nz1s}}\\cdot \\prod ^{\\colorbox{none}{Nz2}}_{e=1}\\left(P^2+2\\colorbox{none}{az2e}P+\\colorbox{none}{az2e}^2+\\colorbox{none}{wz2e}^2\\right)^{\\colorbox{none}{nz2e}}}`,
+        `K\\left(P\\right)=\\frac{G\\left(P\\right)}{CV\\left(P\\right)}=\\frac{\\prod ^{\\colorbox{none}{N3}}_{x\\mathop{=}1}\\left(P+\\colorbox{none}{a3x}\\right)^{\\colorbox{none}{n3x}}\\cdot \\prod ^{\\colorbox{none}{N4}}_{y=1}\\left(P^2+2\\colorbox{none}{a4y}P+\\colorbox{none}{a4y}^2+\\colorbox{none}{w4y}^2\\right)^{\\colorbox{none}{n4y}}}{\\colorbox{none}{Cz}\\prod ^{\\colorbox{none}{N1}}_{s=1}\\left(P+\\colorbox{none}{a1s}\\right)^{\\colorbox{none}{n1s}}\\cdot \\prod ^{\\colorbox{none}{N2}}_{e=1}\\left(P^2+2\\colorbox{none}{a2e}P+\\colorbox{none}{a2e}^2+\\colorbox{none}{w2e}^2\\right)^{\\colorbox{none}{n2e}}}`,
         node,
         {
           throwOnError: false,
@@ -34,7 +34,7 @@ export default function OperatorTransferFunction(props) {
       const changeValue = (value) => {
         setVariable(name, value);
         Object.keys(props.variables).forEach((varName) => {
-          if (varName.slice(2, 3) === name.slice(2, 3) && name !== varName) {
+          if (varName.slice(1, 2) === name.slice(1, 2) && name !== varName) {
             const trimedVar = {};
             for (let i = 1; i <= value; i++) {
               trimedVar[i] = props.variables[varName][i] || null;
@@ -66,7 +66,6 @@ export default function OperatorTransferFunction(props) {
       name.slice(0, 1) === "w" ||
       name.slice(0, 1) === "n"
     ) {
-      const curNameN = "N" + name.slice(1, 3);
       return ReactDOM.createPortal(
         <TableValueView
           key={i}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal, Typography, Tabs, Popover, Row, Col } from "antd";
 import { ChromePicker } from "react-color";
 import TableMode from "./TableMode";
@@ -12,19 +12,21 @@ export default function SignalEdit(props) {
   const [signal, setSignal] = useState(
     props.signal || {
       name: "New signal",
-      initial: { type: "table", leaps: [] },
+      initial: { type: "func", func: undefined },
       color: "#000",
       show: true,
     }
   );
   const [leaps, setLeaps] = useState(signal.initial.leaps || []);
+  const [func, setFunc] = useState(signal.initial.func || undefined);
   const [activeTab, setActiveTab] = useState(
     signal.initial.type == "table" ? "0" : "1"
   );
-
   const getTabInitial = () => {
     if (activeTab === "0") {
       return { type: "table", leaps };
+    } else if (activeTab === "1") {
+      return { type: "func", func };
     }
     return {};
   };
@@ -36,7 +38,9 @@ export default function SignalEdit(props) {
       });
       const range = delay > 5 ? fixed(delay * 2) : 10;
       return range;
-    }
+    } else if (activeTab === "1"){
+			return 10
+		}
     return 0;
   };
   const handleSave = (_) => {
@@ -110,12 +114,12 @@ export default function SignalEdit(props) {
                 <TableMode leaps={leaps} setLeaps={setLeaps} />
               </TabPane>
               <TabPane tab="Function" key="1">
-                <FunctionMode />
+                <FunctionMode func={func} setFunc={setFunc} />
               </TabPane>
               <TabPane tab="Import" key="2"></TabPane>
             </Tabs>
           </Col>
-          <Col span={24} md={12} style={{minHeight:200}}>
+          <Col span={24} md={12} style={{ minHeight: 200 }}>
             <Chart
               preview={true}
               staticRange={getEndSignal()}

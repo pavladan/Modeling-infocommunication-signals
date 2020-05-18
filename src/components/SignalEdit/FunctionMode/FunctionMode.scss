@@ -1,0 +1,62 @@
+.input-field {
+  min-width: 300px;
+  border: 1px dashed rgba(0, 0, 0, 0.05);
+  border-radius: 5px;
+  cursor: text;
+  transition: all 0.6s ease-in-out;
+  &:hover {
+    border: 1px dashed rgba(0, 0, 0, 0);
+  }
+}
+.keyboard {
+  $buttonSize: 40px;
+  display: flex;
+  margin-left: 20px;
+  margin-bottom: 10px;
+  min-height: 220px;
+  transition: all 0.2s ease-in-out;
+  &.collapse {
+    min-height: 0px;
+  }
+  &-block {
+    overflow: auto;
+  }
+  &-block-1 {
+    .keyboard-button {
+      width: 65px;
+    }
+  }
+  &-row {
+    display: flex;
+  }
+  &-button {
+    width: $buttonSize;
+    height: $buttonSize;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid rgba(0, 0, 0, 0.137);
+    border-radius: 5px;
+    margin: 1px;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s ease-in-out;
+    font-size: 16px;
+    flex: 0 0 auto;
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.137);
+    }
+    &:active {
+      background-color: var(--brand);
+    }
+    .katex {
+      font-family: "KaTeX_Math";
+      font-size: inherit;
+    }
+  }
+  &-space {
+    min-width: $buttonSize;
+    height: $buttonSize;
+    margin: 1px;
+  }
+}

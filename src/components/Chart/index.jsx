@@ -12,6 +12,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import calcLeaps from "../../helpers/calcLeaps";
+import calcFunc from "../../helpers/calcFunc";
 import fixed from "../../helpers/fixed";
 import { InputNumber } from "antd";
 
@@ -29,6 +30,7 @@ export default function Chart(props) {
   }, [props.staticRange]);
 
   useEffect(() => {
+		console.log('Need FIX NaN and Infinity and -Infinity !!!','\nDont job <= and Integral !!!!!!')
 		const interval = 200;
 		let direction;
 		let timeout;
@@ -95,12 +97,23 @@ export default function Chart(props) {
             end,
             numberPoints,
           });
-        } else if (chart.data) {
+				} else if(chart.initial && chart.initial.type === "func"){
+					data = calcFunc({
+            func: chart.initial.func,
+            start,
+            end,
+            numberPoints,
+          });
+				}
+				else if (chart.data) {
           data = chart.data.filter(({ x }) => x >= start && x < end);
         }
         data.forEach((e) => {
-          const x = e.x;
-          const y = e.y;
+          let x = e.x;
+					let y = e.y;
+					if (y === -Infinity || y===Infinity || y === NaN){
+						y=undefined
+					}
           if (x !== undefined && y !== undefined) {
             if (!obj[x]) obj[x] = {};
             obj[x][chart.id] = y;

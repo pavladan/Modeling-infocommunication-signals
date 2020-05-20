@@ -53,6 +53,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^4.0.2",
+    "Complex": "^3.0.0",
     "antd": "^4.0.0",
     "classnames": "^2.2.6",
     "electron-is-dev": "^1.1.0",

@@ -8,12 +8,13 @@ export default function OperatorTransferFunction(props) {
   const [inputParentElements, setInputParentElements] = useState([]);
 
   const setVariable = (name, value) => {
-    props.setVariable({[name]:value});
+    props.setVariable({ [name]: value });
   };
   const katexRef = useCallback((node) => {
     if (node) {
+			// ^{\\colorbox{none}{n3x}}
       katex.render(
-        `K\\left(P\\right)=\\frac{G\\left(P\\right)}{CV\\left(P\\right)}=\\frac{\\prod ^{\\colorbox{none}{N3}}_{x\\mathop{=}1}\\left(P+\\colorbox{none}{a3x}\\right)^{\\colorbox{none}{n3x}}\\cdot \\prod ^{\\colorbox{none}{N4}}_{y=1}\\left(P^2+2\\colorbox{none}{a4y}P+\\colorbox{none}{a4y}^2+\\colorbox{none}{w4y}^2\\right)^{\\colorbox{none}{n4y}}}{\\colorbox{none}{Cz}\\prod ^{\\colorbox{none}{N1}}_{s=1}\\left(P+\\colorbox{none}{a1s}\\right)^{\\colorbox{none}{n1s}}\\cdot \\prod ^{\\colorbox{none}{N2}}_{e=1}\\left(P^2+2\\colorbox{none}{a2e}P+\\colorbox{none}{a2e}^2+\\colorbox{none}{w2e}^2\\right)^{\\colorbox{none}{n2e}}}`,
+        `K\\left(P\\right)=\\frac{G\\left(P\\right)}{CV\\left(P\\right)}=\\frac{\\prod ^{\\colorbox{none}{N3}}_{x\\mathop{=}1}\\left(P+\\colorbox{none}{a3x}\\right)\\cdot \\prod ^{\\colorbox{none}{N4}}_{y=1}\\left(P^2+2\\colorbox{none}{a4y}P+\\colorbox{none}{a4y}^2+\\colorbox{none}{w4y}^2\\right)}{\\colorbox{none}{Cz}\\prod ^{\\colorbox{none}{N1}}_{s=1}\\left(P+\\colorbox{none}{a1s}\\right)\\cdot \\prod ^{\\colorbox{none}{N2}}_{e=1}\\left(P^2+2\\colorbox{none}{a2e}P+\\colorbox{none}{a2e}^2+\\colorbox{none}{w2e}^2\\right)}`,
         node,
         {
           throwOnError: false,
@@ -72,6 +73,14 @@ export default function OperatorTransferFunction(props) {
           value={props.variables[name]}
           onChange={(v) => setVariable(name, v)}
           style={{ position: "relative", zIndex: 1 }}
+          condition={(e) => {
+            if (name.slice(1, 2) === "1" || name.slice(1, 2) === "2") {
+              return e > 0;
+            } else if (name.slice(0, 1) === "w") {
+              return e > 0;
+            }
+            return true;
+          }}
         />,
         element
       );
@@ -112,7 +121,7 @@ function SimpleNumbersInput(props) {
     <InputNumber
       value={props.value}
       onChange={(e) => {
-        if (typeof e === "number") {
+        if (typeof e === "number" && e !== 0) {
           props.onChange(e);
         } else if (e === null) props.onChange(1);
       }}
@@ -165,7 +174,10 @@ function TableValueView(props) {
             tabIndex={0}
             style={{ borderColor: el.value === null && "red" }}
             onChange={(e) => {
-              if (typeof e === "number") {
+              if (
+                typeof e === "number" &&
+                (props.condition ? props.condition(e) : true)
+              ) {
                 props.onChange({
                   ...props.value,
                   [el.i]: e,

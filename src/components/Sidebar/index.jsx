@@ -27,6 +27,9 @@ import SignalEdit from "../SignalEdit";
 import ChainEdit from "../ChainEdit";
 import CalcSettings from "../CalcSettings";
 import calcReaction from "../../helpers/calcReaction";
+import calcLeaps from "../../helpers/calcLeaps";
+import calcFunc from "../../helpers/calcFunc";
+import getRandomColor from "../../helpers/getRandomColor";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -37,27 +40,23 @@ export default function Sidebar(props) {
       name: "T",
       id: "c0",
       variables: {
-        Cz: -3.3,
-        N1: 2,
+        Cz: 1,
+        N1: 1,
         N2: 1,
         N3: 1,
         N4: 1,
-        a1s: { 1: 3, 2: 9 },
-        a2e: { 1: 2 },
-        a3x: { 1: 6 },
-        a4y: { 1: 6 },
-        n1s: { 1: 6, 2: null },
-        n2e: { 1: 7 },
-        n3x: { 1: 4 },
-        n4y: { 1: 6 },
-        w2e: { 1: 3 },
-        w4y: { 1: 6 },
+        a1s: { 1: 1 },
+        a2e: { 1: 1 },
+        a3x: { 1: 1 },
+        a4y: { 1: 1 },
+        w2e: { 1: 1 },
+        w4y: { 1: 1 },
       },
     },
   ]);
   const [chain, setChain] = useState();
 
-  const [signalEditOpen, setSignalEditOpen] = useState(true);
+  const [signalEditOpen, setSignalEditOpen] = useState(false);
   const [chainEditOpen, setChainEditOpen] = useState(false);
   const [calcSettingsOpen, setClacSettingsOpen] = useState(false);
 
@@ -129,15 +128,34 @@ export default function Sidebar(props) {
   };
 
   const calculate = () => {
-    console.log(props.signals.find((e) => e.id === props.signal));
-    console.log(chains.find((e) => chain === e.id));
     if (!props.signal || !chain) {
       return;
     }
-    calcReaction(
-      props.signals.find((e) => e.id === props.signal).data,
-      chains.find((e) => chain === e.id).variables
-    );
+    const curSignal = props.signals.find((e) => e.id === props.signal);
+    const curChain = chains.find((e) => chain === e.id);
+    let signalData = curSignal.data;
+    if (curSignal.initial.type === "table") {
+      signalData = calcLeaps({
+        leaps: curSignal.initial.leaps,
+        start:0,
+        end:10,
+        numberPoints:10,
+      });
+    } else if (curSignal.initial.type === "func") {
+      signalData = calcFunc({
+        func: curSignal.initial.func,
+        start:0,
+        end:10,
+        numberPoints:10,
+      });
+    }
+    const data = calcReaction(signalData, curChain.variables);
+    props.addResult({
+      name: `Result: ${curSignal.name} - ${curChain.name}`,
+      show: true,
+      color: getRandomColor(),
+      data,
+    });
   };
   return (
     <div

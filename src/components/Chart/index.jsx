@@ -15,14 +15,15 @@ import calcLeaps from "../../helpers/calcLeaps";
 import calcFunc from "../../helpers/calcFunc";
 import fixed from "../../helpers/fixed";
 import { InputNumber } from "antd";
+import calcReaction from "../../helpers/calcReaction";
 
 export default function Chart(props) {
   const [data, setData] = useState([]);
   const [viewRange, setViewRange] = useState([0, 20]);
-	const [numberPoints, setNumberPoints] = useState(400);
-	const [moving, setMoving] = useState(false)
+  const [renderRange, setRenderRange] = useState([0, 29]);
+  const [numberPoints, setNumberPoints] = useState(400);
+  const [moving, setMoving] = useState(false);
   const chartRef = useRef(null);
-	
 
   useEffect(() => {
     props.staticRange !== undefined &&
@@ -30,42 +31,48 @@ export default function Chart(props) {
   }, [props.staticRange]);
 
   useEffect(() => {
-		console.log('Need FIX NaN and Infinity and -Infinity !!!','\nDont job <= and Integral !!!!!!')
-		const interval = 200;
-		let direction;
-		let timeout;
-		const onWheel = (e) => {
-			if (chartRef.current.container && chartRef.current.container.contains(e.target)) {
-				if (e.deltaY) {
-					if (!direction) {
-						direction = "y";
-						timeout = setTimeout(() => {
-							direction = undefined;
-						}, interval);
-					} else if (direction === "y") {
-						clearTimeout(timeout);
-						timeout = setTimeout(() => {
-							direction = undefined;
-						}, interval);
-						zoomChart(e.deltaY);
-					}
-				}
-				if (e.deltaX) {
-					if (!direction) {
-						direction = "x";
-						timeout = setTimeout(() => {
-							direction = undefined;
-						}, interval);
-					} else if (direction === "x") {
-						clearTimeout(timeout);
-						timeout = setTimeout(() => {
-							direction = undefined;
-						}, interval);
-						moveChart(e.deltaX);
-					}
-				}
-			}
-		};
+    console.log(
+      "Need FIX NaN and Infinity and -Infinity !!!",
+      "\nDont job <= and Integral !!!!!!"
+    );
+    const interval = 200;
+    let direction;
+    let timeout;
+    const onWheel = (e) => {
+      if (
+        chartRef.current.container &&
+        chartRef.current.container.contains(e.target)
+      ) {
+        if (e.deltaY) {
+          if (!direction) {
+            direction = "y";
+            timeout = setTimeout(() => {
+              direction = undefined;
+            }, interval);
+          } else if (direction === "y") {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+              direction = undefined;
+            }, interval);
+            zoomChart(e.deltaY);
+          }
+        }
+        if (e.deltaX) {
+          if (!direction) {
+            direction = "x";
+            timeout = setTimeout(() => {
+              direction = undefined;
+            }, interval);
+          } else if (direction === "x") {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+              direction = undefined;
+            }, interval);
+            moveChart(e.deltaX);
+          }
+        }
+      }
+    };
     if (!props.preview) {
       document.addEventListener("mousewheel", onWheel);
     }
@@ -76,14 +83,15 @@ export default function Chart(props) {
   useEffect(() => {
     setData(
       calc({
-        start: viewRange[0],
-        end: viewRange[1],
+        start: renderRange[0],
+        end: renderRange[1],
         numberPoints,
       })
     );
-  }, [props.charts, viewRange, numberPoints]);
+  }, [props.charts, renderRange, numberPoints]);
   const calc = ({ start, end, numberPoints }) => {
-    if (!props.charts || props.charts.length === 0) return [];
+		if (!props.charts || props.charts.length === 0) return [];
+		console.log('calc')
     const allCharts = props.charts;
     const obj = {};
     allCharts
@@ -97,23 +105,22 @@ export default function Chart(props) {
             end,
             numberPoints,
           });
-				} else if(chart.initial && chart.initial.type === "func"){
-					data = calcFunc({
+        } else if (chart.initial && chart.initial.type === "func") {
+          data = calcFunc({
             func: chart.initial.func,
             start,
             end,
             numberPoints,
           });
-				}
-				else if (chart.data) {
+        } else if (chart.data) {
           data = chart.data.filter(({ x }) => x >= start && x < end);
         }
         data.forEach((e) => {
           let x = e.x;
-					let y = e.y;
-					if (y === -Infinity || y===Infinity || y === NaN){
-						y=undefined
-					}
+          let y = e.y;
+          if (y === -Infinity || y === Infinity || y === NaN) {
+            y = undefined;
+          }
           if (x !== undefined && y !== undefined) {
             if (!obj[x]) obj[x] = {};
             obj[x][chart.id] = y;
@@ -157,7 +164,7 @@ export default function Chart(props) {
     });
   };
   const handleMove = (_, downEvent) => {
-		setMoving(true)
+    setMoving(true);
     let startX = downEvent.clientX;
     const onMove = (moveEvent) => {
       const offsetX = startX - moveEvent.clientX;
@@ -166,8 +173,8 @@ export default function Chart(props) {
     };
     document.addEventListener("mousemove", onMove);
     document.addEventListener("mouseup", (_) => {
-			document.removeEventListener("mousemove", onMove);
-			setMoving(false)
+      document.removeEventListener("mousemove", onMove);
+      setMoving(false);
     });
   };
   const lines =
@@ -188,14 +195,19 @@ export default function Chart(props) {
             )
         )
       : null;
-  const rechart =  (
-    <ResponsiveContainer width="100%" height="100%" minWidth={110} minHeight={110}>
+  const rechart = (
+    <ResponsiveContainer
+      width="100%"
+      height="100%"
+      minWidth={110}
+      minHeight={110}
+    >
       <LineChart
         data={data}
         margin={{ top: 30, right: 40, left: 10, bottom: 5 }}
         onMouseDown={!props.preview && handleMove}
         ref={chartRef}
-        style={{ userSelect: "none", cursor: moving ? 'grabbing' : 'grab' }}
+        style={{ userSelect: "none", cursor: moving ? "grabbing" : "grab" }}
       >
         <XAxis
           allowDataOverflow
@@ -251,12 +263,13 @@ export default function Chart(props) {
           }}
         >
           <InputNumber
+						disabled
             size="small"
-            value={viewRange[0]}
+            value={renderRange[0]}
             onPressEnter={(e) => e.target.blur()}
             onChange={(e) => {
               if (typeof e === "number" && e >= 0) {
-                setViewRange((old) => {
+                setRenderRange((old) => {
                   if (e < old[1]) return [e, old[1]];
                   return old;
                 });
@@ -278,17 +291,17 @@ export default function Chart(props) {
                 Number.isInteger(e)
               ) {
                 setNumberPoints(e);
-              } else if (e===null) setNumberPoints(500)
+              } else if (e === null) setNumberPoints(500);
             }}
             onPressEnter={(e) => e.target.blur()}
           ></InputNumber>
           <InputNumber
             size="small"
-            value={viewRange[1]}
+            value={renderRange[1]}
             onPressEnter={(e) => e.target.blur()}
             onChange={(e) => {
               if (typeof e === "number" && e >= 0) {
-                setViewRange((old) => {
+                setRenderRange((old) => {
                   if (e > old[0]) return [old[0], e];
                   return old;
                 });

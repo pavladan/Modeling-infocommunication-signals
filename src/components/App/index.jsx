@@ -38,7 +38,7 @@ export default function App() {
     {
       name: "cos",
       id: "s1",
-      show: true,
+      show: false,
       color: "blue",
       data: [
         { x: 0, y: 1 },
@@ -79,9 +79,9 @@ export default function App() {
   const [signal, setSignal] = useState();
   const [results, setResults] = useState([
     // {
-    //   name: "Result signal 1",
-    //   show: false,
-    //   color: "#000",
+      // name: "Result signal 1",
+      // show: false,
+      // color: "#000",
     //   id: "r0",
     //   data: [
     //     { x: 2, y: 4 },
@@ -172,7 +172,16 @@ export default function App() {
         return r;
       });
     });
-  };
+	};
+	
+	const addResult=newResult=>{
+		setResults((old) => {
+        const ids = old.map((s) => s.id);
+        const newId = genNewId(ids, "r");
+        return [...old, { ...newResult, id: newId }];
+      
+    });
+	}
 
   const toggleShowResult = (id) => {
     setResults((old) => {
@@ -208,7 +217,8 @@ export default function App() {
         >
           <Sidebar
             style={{ width: sidebarWidth}}
-            results={results}
+						results={results}
+						addResult={addResult}
             deleteResult={deleteResult}
             toggleShowResult={toggleShowResult}
             changeColorOnResult={changeColorOnResult}

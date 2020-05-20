@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Typography, Tabs, Popover, Row, Col } from "antd";
+import { Modal, Typography, Tabs, Popover, Row, Col, Divider } from "antd";
 import { ChromePicker } from "react-color";
 import TableMode from "./TableMode";
 import Chart from "../Chart";

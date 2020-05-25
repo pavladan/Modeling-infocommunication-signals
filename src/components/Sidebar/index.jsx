@@ -134,7 +134,7 @@ export default function Sidebar(props) {
     const curSignal = props.signals.find((e) => e.id === props.signal);
     const curChain = chains.find((e) => chain === e.id);
     props.addResult({
-      name: `Result: ${curSignal.name} - ${curChain.name}`,
+      name: `${curSignal.name} / ${curChain.name}`,
       show: true,
       color: getRandomColor(),
       initial: {
@@ -159,7 +159,7 @@ export default function Sidebar(props) {
         <Row gutter={8}>
           <Col>
             <Title level={2} style={{ color: "var(--text)" }}>
-              Signals
+              Сигналы
               <Tooltip placement="right" title="Add new signal">
                 <Button
                   shape="circle"
@@ -178,7 +178,7 @@ export default function Sidebar(props) {
             <Select
               showSearch
               style={{ width: "100%" }}
-              placeholder="Select a signal"
+              placeholder="Выберите сигнал"
               optionFilterProp="children"
               filterOption={(input, option) =>
                 option.title.toLowerCase().indexOf(input.toLowerCase()) >= 0
@@ -192,7 +192,7 @@ export default function Sidebar(props) {
             </Select>
           </Col>
           <Col>
-            <Tooltip placement="bottom" title="Edit this signal">
+            <Tooltip placement="bottom" title="Изменить сигнал">
               <Button
                 disabled={props.signal === undefined}
                 shape="circle"
@@ -206,7 +206,7 @@ export default function Sidebar(props) {
             </Tooltip>
           </Col>
           <Col>
-            <Tooltip placement="bottom" title="Download this signal">
+            <Tooltip placement="bottom" title="Скачать сигнал">
               <Button
                 disabled={props.signal === undefined}
                 shape="circle"
@@ -215,10 +215,11 @@ export default function Sidebar(props) {
             </Tooltip>
           </Col>
           <Col>
-            <Tooltip placement="bottom" title="Delete this signal">
+            <Tooltip placement="bottom" title="Удалить сигнал">
               <Popconfirm
-                title="Delete this signal ?"
+                title="Удалить выбранный сигнал ?"
                 onConfirm={props.deleteSignal}
+                cancelText="Отмена"
               >
                 <Button
                   disabled={props.signal === undefined}
@@ -235,8 +236,8 @@ export default function Sidebar(props) {
         <Row gutter={8}>
           <Col>
             <Title level={2} style={{ color: "var(--text)" }}>
-              Chains
-              <Tooltip placement="right" title="Add new chain">
+              Звенья
+              <Tooltip placement="right" title="Добавить новое звено">
                 <Button
                   shape="circle"
                   size="default"
@@ -254,7 +255,7 @@ export default function Sidebar(props) {
             <Select
               showSearch
               style={{ width: "100%" }}
-              placeholder="Select a chain"
+              placeholder="Выберите звено"
               optionFilterProp="children"
               filterOption={(input, option) =>
                 option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
@@ -268,7 +269,7 @@ export default function Sidebar(props) {
             </Select>
           </Col>
           <Col>
-            <Tooltip placement="bottom" title="Edit this chain">
+            <Tooltip placement="bottom" title="Изменить звено">
               <Button
                 disabled={chain === undefined}
                 shape="circle"
@@ -280,7 +281,7 @@ export default function Sidebar(props) {
             </Tooltip>
           </Col>
           <Col>
-            <Tooltip placement="bottom" title="Download this chain">
+            <Tooltip placement="bottom" title="Скачать звено">
               <Button
                 disabled={chain === undefined}
                 shape="circle"
@@ -289,8 +290,12 @@ export default function Sidebar(props) {
             </Tooltip>
           </Col>
           <Col>
-            <Tooltip placement="bottom" title="Delete this chain">
-              <Popconfirm title="Delete this chain ?" onConfirm={deleteChain}>
+            <Tooltip placement="bottom" title="Удалить звено">
+              <Popconfirm
+                title="Удалить выбранное звено ?"
+                onConfirm={deleteChain}
+                cancelText="Отмена"
+              >
                 <Button
                   disabled={chain === undefined}
                   shape="circle"
@@ -312,7 +317,7 @@ export default function Sidebar(props) {
               icon={<LineChartOutlined />}
               onClick={calculate}
             >
-              Calculate
+              Посчитать
             </Button>
           </Col>
           <Col>
@@ -334,7 +339,7 @@ export default function Sidebar(props) {
         }}
       >
         <Title level={2} style={{ margin: "12px 0" }}>
-          Results
+          Результаты
         </Title>
         <List
           style={{ flex: 1, overflowY: "auto" }}
@@ -371,7 +376,17 @@ export default function Sidebar(props) {
                     ></div>
                   </Popover>
                 }
-                title={<Text editable>{item.name}</Text>}
+                title={
+                  <Text
+                    editable={{
+                      onChange: (e) => {
+                        if (e) props.setNameOnResult(item.id,e);
+                      },
+                    }}
+                  >
+                    {item.name}
+                  </Text>
+                }
               ></List.Item.Meta>
               <Button
                 shape="circle"

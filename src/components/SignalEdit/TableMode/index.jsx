@@ -29,7 +29,7 @@ export default function TableMode(props) {
         <Row align="middle" gutter={8}>
           <Col>
             <Typography.Title level={4} style={{ margin: 0 }}>
-              Single Leap
+              Единичный скачок
             </Typography.Title>
           </Col>
           <Col>
@@ -58,8 +58,8 @@ export default function TableMode(props) {
             { id: "delay", value: 0 },
           ]}
           columnNames={[
-            { id: "amplitude", name: "Amplitude [A]" },
-            { id: "delay", name: "Delay [τ], μs", min: 0 },
+            { id: "amplitude", name: "Амплитуда [A], В" },
+            { id: "delay", name: "Задержка [τ], мкс", min: 0 },
           ]}
         />
       </Col>
@@ -67,7 +67,7 @@ export default function TableMode(props) {
         <Row align="middle" gutter={8}>
           <Col>
             <Typography.Title level={4} style={{ margin: 0 }}>
-              Modulated Leap
+              Модулированный скачок
             </Typography.Title>
           </Col>
           <Col>
@@ -97,10 +97,10 @@ export default function TableMode(props) {
             { id: "phase", value: 0 },
           ]}
           columnNames={[
-            { id: "amplitude", name: "Amplitude [A]" },
-            { id: "delay", name: "Delay [τ], μs", min: 0 },
-            { id: "fraquency", name: "Fraquency [ω], MGhz", min: 0 },
-            { id: "phase", name: "Initial phase [φ], grad" },
+            { id: "amplitude", name: "Амплитуда [A], В" },
+            { id: "delay", name: "Задержка [τ], мкс", min: 0 },
+            { id: "fraquency", name: "Частота [ω], МГц", min: 0 },
+            { id: "phase", name: "Начальная фаза [φ], град." },
           ]}
         />
       </Col>
@@ -237,7 +237,7 @@ const EditableTable = (props) => {
           margin: "16px 0",
         }}
       >
-        Add
+        Добавить
       </Button>
     </div>
   );

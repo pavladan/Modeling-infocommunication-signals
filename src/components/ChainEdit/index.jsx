@@ -8,7 +8,7 @@ const { TabPane } = Tabs;
 export default function ChainEdit(props) {
   const [chain, setChain] = useState(
     props.chain || {
-      name: "New chain",
+      name: "Новое звено",
       variables: {
         Cz: 1,
         N1: 1,
@@ -25,7 +25,7 @@ export default function ChainEdit(props) {
     }
   );
   const handleSave = (_) => {
-		props.save(chain);
+    props.save(chain);
     props.close();
   };
   const setTitle = (name) => {
@@ -35,27 +35,30 @@ export default function ChainEdit(props) {
     }));
   };
   const setVariable = (variable) => {
-    setChain((old) =>{
-			const variables = {
-				...old.variables,
-				...variable
-			}
-			return {
-				...old,
-				variables,
-			}
-		} )
+    setChain((old) => {
+      const variables = {
+        ...old.variables,
+        ...variable,
+      };
+      return {
+        ...old,
+        variables,
+      };
+    });
   };
   const validateVariables = () => {
-    return Object.values(chain.variables).every((value) => {
-      if (typeof value === "object") {
-        return Object.values(value).every((value2) => {
-          return value2 !== null;
-        });
-      } else {
-        return value !== null;
-      }
-    });
+    return (
+      chain.name &&
+      Object.values(chain.variables).every((value) => {
+        if (typeof value === "object") {
+          return Object.values(value).every((value2) => {
+            return value2 !== null;
+          });
+        } else {
+          return value !== null;
+        }
+      })
+    );
   };
   return (
     <div className="SignalEdit">
@@ -65,7 +68,11 @@ export default function ChainEdit(props) {
         title={
           <Title
             level={3}
-            editable={{ onChange: (e) => setTitle(e) }}
+            editable={{
+              onChange: (e) => {
+                if (e) setTitle(e);
+              },
+            }}
             style={{ textAlign: "center" }}
           >
             {chain.name}
@@ -74,18 +81,19 @@ export default function ChainEdit(props) {
         visible={props.visible}
         onCancel={props.close}
         onOk={handleSave}
-        okText="Save"
+        cancelText={"Отменить"}
+        okText="Сохранить"
         okButtonProps={{ disabled: !validateVariables() }}
         width={"95%"}
       >
         <Tabs>
-          <TabPane tab="Chain" key="0">
+          <TabPane tab="Звено" key="0">
             <OperatorTransferFunction
               variables={chain.variables}
               setVariable={setVariable}
             />
           </TabPane>
-          <TabPane tab="Import" key="2"></TabPane>
+          <TabPane tab="Импорт" key="2"></TabPane>
         </Tabs>
       </Modal>
     </div>

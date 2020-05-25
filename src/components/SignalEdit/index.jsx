@@ -11,7 +11,7 @@ const { TabPane } = Tabs;
 export default function SignalEdit(props) {
   const [signal, setSignal] = useState(
     props.signal || {
-      name: "New signal",
+      name: "Новый сигнал",
       initial: { type: "func", func: undefined },
       color: "#000",
       show: true,
@@ -58,17 +58,20 @@ export default function SignalEdit(props) {
         closable={false}
         visible={props.visible}
         onCancel={props.close}
-        zIndex={1}
-        okText="Save"
+				zIndex={1}
+				cancelText="Отмена"
+        okText="Сохранить"
         onOk={handleSave}
         width={"95%"}
         title={
           <div style={{ position: "relative" }}>
             <Title
               level={3}
-              editable={{
-                onChange: (e) => setSignal((old) => ({ ...old, name: e })),
-              }}
+							editable={{
+								onChange: (e) => {
+									if (e) setSignal((old) => ({ ...old, name: e }));
+								},
+							}}
               style={{ textAlign: "center", maxWidth: "60%", margin: "0 20%" }}
             >
               {signal.name}
@@ -110,13 +113,13 @@ export default function SignalEdit(props) {
         <Row>
           <Col span={24} md={12}>
             <Tabs activeKey={activeTab} onTabClick={setActiveTab}>
-              <TabPane tab="Table" key="0">
+              <TabPane tab="Таблица" key="0">
                 <TableMode leaps={leaps} setLeaps={setLeaps} />
               </TabPane>
-              <TabPane tab="Function" key="1">
+              <TabPane tab="Функция" key="1">
                 <FunctionMode func={func} setFunc={setFunc} />
               </TabPane>
-              <TabPane tab="Import" key="2"></TabPane>
+              <TabPane tab="Импорт" key="2"></TabPane>
             </Tabs>
           </Col>
           <Col span={24} md={12} style={{ minHeight: 200 }}>

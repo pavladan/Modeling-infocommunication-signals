@@ -173,7 +173,16 @@ export default function App() {
       });
     });
 	};
-	
+	const setNameOnResult = (id,name)=>{
+		setResults((old) => {
+      return old.map((r) => {
+        if (r.id === id) {
+          return { ...r, name: name };
+        }
+        return r;
+      });
+    });
+	}
 	const addResult=newResult=>{
 		setResults((old) => {
         const ids = old.map((s) => s.id);
@@ -221,7 +230,8 @@ export default function App() {
 						addResult={addResult}
             deleteResult={deleteResult}
             toggleShowResult={toggleShowResult}
-            changeColorOnResult={changeColorOnResult}
+						changeColorOnResult={changeColorOnResult}
+						setNameOnResult={setNameOnResult}
             changeColorOnSignal={changeColorOnSignal}
             signal={signal}
             setSignal={setSignal}
@@ -234,9 +244,7 @@ export default function App() {
         </Sider>
         <Layout className="site-layout">
           <Content style={{ margin: "0 16px" }}>
-
               <Chart theme={theme} charts={[...signals, ...results]} />
-
           </Content>
         </Layout>
       </Layout>

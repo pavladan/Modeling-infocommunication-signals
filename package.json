@@ -1,6 +1,6 @@
 {
   "name": "modeling-infocommunication-signals",
-  "version": "0.0.4",
+  "version": "0.5.0",
   "description": "Modeling of composite infocommunication signals on the complex plane and in the time domain",
   "main": "main.js",
   "scripts": {

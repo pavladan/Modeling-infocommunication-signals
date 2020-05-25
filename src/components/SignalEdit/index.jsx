@@ -5,6 +5,7 @@ import TableMode from "./TableMode";
 import Chart from "../Chart";
 import fixed from "../../helpers/fixed";
 import FunctionMode from "./FunctionMode";
+import getRandomColor from "../../helpers/getRandomColor";
 
 const { Title } = Typography;
 const { TabPane } = Tabs;
@@ -13,7 +14,7 @@ export default function SignalEdit(props) {
     props.signal || {
       name: "Новый сигнал",
       initial: { type: "func", func: undefined },
-      color: "#000",
+      color: getRandomColor(),
       show: true,
     }
   );
@@ -38,9 +39,9 @@ export default function SignalEdit(props) {
       });
       const range = delay > 5 ? fixed(delay * 2) : 10;
       return range;
-    } else if (activeTab === "1"){
-			return 10
-		}
+    } else if (activeTab === "1") {
+      return 10;
+    }
     return 0;
   };
   const handleSave = (_) => {
@@ -58,8 +59,8 @@ export default function SignalEdit(props) {
         closable={false}
         visible={props.visible}
         onCancel={props.close}
-				zIndex={1}
-				cancelText="Отмена"
+        zIndex={1}
+        cancelText="Отмена"
         okText="Сохранить"
         onOk={handleSave}
         width={"95%"}
@@ -67,11 +68,11 @@ export default function SignalEdit(props) {
           <div style={{ position: "relative" }}>
             <Title
               level={3}
-							editable={{
-								onChange: (e) => {
-									if (e) setSignal((old) => ({ ...old, name: e }));
-								},
-							}}
+              editable={{
+                onChange: (e) => {
+                  if (e) setSignal((old) => ({ ...old, name: e }));
+                },
+              }}
               style={{ textAlign: "center", maxWidth: "60%", margin: "0 20%" }}
             >
               {signal.name}

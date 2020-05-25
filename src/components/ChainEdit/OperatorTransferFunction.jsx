@@ -219,7 +219,7 @@ function TableValueView(props) {
         }}
         danger={data.some((d) => d.value === null)}
       >
-        {data.map((e) => (e.value !== null ? e.value : " ")).join(",")}
+        {data.map((e) => (e.value !== null ? e.value : " ")).join(", ")}
       </Button>
     </Popover>
   );

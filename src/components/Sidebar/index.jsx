@@ -133,28 +133,15 @@ export default function Sidebar(props) {
     }
     const curSignal = props.signals.find((e) => e.id === props.signal);
     const curChain = chains.find((e) => chain === e.id);
-    let signalData = curSignal.data;
-    if (curSignal.initial.type === "table") {
-      signalData = calcLeaps({
-        leaps: curSignal.initial.leaps,
-        start:0,
-        end:10,
-        numberPoints:10,
-      });
-    } else if (curSignal.initial.type === "func") {
-      signalData = calcFunc({
-        func: curSignal.initial.func,
-        start:0,
-        end:10,
-        numberPoints:10,
-      });
-    }
-    const data = calcReaction(signalData, curChain.variables);
     props.addResult({
       name: `Result: ${curSignal.name} - ${curChain.name}`,
       show: true,
       color: getRandomColor(),
-      data,
+      initial: {
+        type: "result",
+        signal: curSignal,
+        chain: curChain.variables,
+      },
     });
   };
   return (

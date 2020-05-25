@@ -20,8 +20,8 @@ import calcReaction from "../../helpers/calcReaction";
 export default function Chart(props) {
   const [data, setData] = useState([]);
   const [viewRange, setViewRange] = useState([0, 20]);
-  const [renderRange, setRenderRange] = useState([0, 29]);
-  const [numberPoints, setNumberPoints] = useState(400);
+  const [renderRange, setRenderRange] = useState([0, 20]);
+  const [numberPoints, setNumberPoints] = useState(100);
   const [moving, setMoving] = useState(false);
   const chartRef = useRef(null);
 
@@ -80,6 +80,34 @@ export default function Chart(props) {
       !props.preview && document.removeEventListener("mousewheel", onWheel);
     };
   }, []);
+  const getChartData = (chart, range) => {
+    const { start, end, numberPoints } = range;
+    if (chart.initial) {
+      if (chart.initial.type === "table") {
+        return calcLeaps({
+          leaps: chart.initial.leaps,
+          start,
+          end,
+          numberPoints,
+        });
+      } else if (chart.initial.type === "func") {
+        return calcFunc({
+          func: chart.initial.func,
+          start,
+          end,
+          numberPoints,
+        });
+      } else if (chart.initial.type === "result") {
+        return calcReaction(
+          getChartData(chart.initial.signal, range),
+          chart.initial.chain
+        );
+      }
+    } else if (chart.data) {
+      return chart.data.filter(({ x }) => x >= start && x < end);
+    }
+    return [];
+  };
   useEffect(() => {
     setData(
       calc({
@@ -90,31 +118,14 @@ export default function Chart(props) {
     );
   }, [props.charts, renderRange, numberPoints]);
   const calc = ({ start, end, numberPoints }) => {
-		if (!props.charts || props.charts.length === 0) return [];
-		console.log('calc')
+    if (!props.charts || props.charts.length === 0) return [];
+    console.log("calc");
     const allCharts = props.charts;
     const obj = {};
     allCharts
       .filter((c) => c.show)
       .forEach((chart) => {
-        let data = [];
-        if (chart.initial && chart.initial.type === "table") {
-          data = calcLeaps({
-            leaps: chart.initial.leaps,
-            start,
-            end,
-            numberPoints,
-          });
-        } else if (chart.initial && chart.initial.type === "func") {
-          data = calcFunc({
-            func: chart.initial.func,
-            start,
-            end,
-            numberPoints,
-          });
-        } else if (chart.data) {
-          data = chart.data.filter(({ x }) => x >= start && x < end);
-        }
+        const data = getChartData(chart, { start, end, numberPoints });
         data.forEach((e) => {
           let x = e.x;
           let y = e.y;
@@ -263,7 +274,7 @@ export default function Chart(props) {
           }}
         >
           <InputNumber
-						disabled
+            disabled
             size="small"
             value={renderRange[0]}
             onPressEnter={(e) => e.target.blur()}

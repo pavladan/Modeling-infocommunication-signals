@@ -123,10 +123,9 @@ export default function calcReaction(signalData, chainVar) {
   const C_n1 = (n) => f(-1 / fi_n(n));
   const C_n2 = (n) => f(-1 / fi_n1(n));
 
-  const R_0_ozo = (n) =>
+  const R_0_ozo_without_a_n0 = (n) =>
     f(
-      a_n0(n) *
-        math.prod(1, N3, (i) => a3x[i]) *
+      math.prod(1, N3, (i) => a3x[i]) *
         math.prod(1, N4, (i) => math.pow(a4y[i], 2) + math.pow(w4y[i], 2))
     ) /
     f(
@@ -134,9 +133,15 @@ export default function calcReaction(signalData, chainVar) {
         Cz *
         math.prod(1, N1, (i) => a1s[i]) *
         math.prod(1, N2, (i) => math.pow(a2e[i], 2) + math.pow(w2e[i], 2))
-    );
-  const R_1_ozo = (n) =>
-    f(
+		);
+		
+  const R_0_ozo = (n) => f(R_0_ozo_without_a_n0(n) * a_n0(n));
+
+  const R_1_ozo = (n) => {
+    if (fi_n(n) === fi_n1(n)) {
+      return R_0_ozo_without_a_n0(n);
+    }
+    return f(
       R_0_ozo(n) *
         f(
           math.sum(1, N3, (i) => 1 / a3x[i]) +
@@ -156,6 +161,7 @@ export default function calcReaction(signalData, chainVar) {
             )
         )
     );
+  };
   const R_0_jz1s = (a_nj, C_nj, i) =>
     f(
       f(f(-a1s[i] + a_nj) / f(C_nj * math.pow(-a1s[i], 2))) *
@@ -307,18 +313,18 @@ export default function calcReaction(signalData, chainVar) {
           )
         )
     );
-		const Psi_n = -f(R_0_ozo(n) * n * delta_t) - R_1_ozo(n) + sum1 + sum2;
-		
-		console.log("-----------------",n,"---------------")
-    console.log('fi_n/fi_n+1',fi_n(n), fi_n1(n));
-    console.log('a_n0(1,2)',a_n0(n), a_n1(n), a_n2(n));
-    console.log('C_n0(1,2)',C_n0(n), C_n1(n), C_n2(n));
-    console.log('R_0/1_ozo',R_0_ozo(n), R_1_ozo(n));
-    console.log('R_0_jz1s',R_0_1z1s(n,1), R_0_2z1s(n,1));
-    console.log('R_0_1z2e/fi_0_1z2e',R_0_1z2e(n,1), fi_0_1z2e(n,1));
-    console.log('R_0_2z2e/fi_0_2z2e',R_0_2z2e(n,1), fi_0_2z2e(n,1));
-		console.log('M1(2)1s',M_11s(1), M_21s(1));
-		console.log('M(N)12e',M_12e(1), N_12e(1),N_22e(1));
+    const Psi_n = -f(R_0_ozo(n) * n * delta_t) - R_1_ozo(n) + sum1 + sum2;
+
+    console.log("-----------------", n, "---------------");
+    console.log("fi_n/fi_n+1", fi_n(n), fi_n1(n));
+    console.log("a_n0(1,2)", a_n0(n), a_n1(n), a_n2(n));
+    console.log("C_n0(1,2)", C_n0(n), C_n1(n), C_n2(n));
+    console.log("R_0/1_ozo", R_0_ozo(n), R_1_ozo(n));
+    console.log("R_0_jz1s", R_0_1z1s(n, 1), R_0_2z1s(n, 1));
+    console.log("R_0_1z2e/fi_0_1z2e", R_0_1z2e(n, 1), fi_0_1z2e(n, 1));
+    console.log("R_0_2z2e/fi_0_2z2e", R_0_2z2e(n, 1), fi_0_2z2e(n, 1));
+    console.log("M1(2)1s", M_11s(1), M_21s(1));
+    console.log("M(N)12e", M_12e(1), N_12e(1), N_22e(1));
     Psi.push({ x: f(n * delta_t), y: f(Psi_n) });
   }
   console.log(Psi);

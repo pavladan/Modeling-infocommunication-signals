@@ -14,8 +14,9 @@ import {
 import calcLeaps from "../../helpers/calcLeaps";
 import calcFunc from "../../helpers/calcFunc";
 import fixed from "../../helpers/fixed";
-import { InputNumber, Form } from "antd";
+import { InputNumber, Form, Popover, Button } from "antd";
 import calcReaction from "../../helpers/calcReaction";
+import { SettingOutlined } from "@ant-design/icons";
 
 export default function Chart(props) {
   const [data, setData] = useState([]);
@@ -265,51 +266,65 @@ export default function Chart(props) {
     >
       <div style={{ flex: 1 }}>{rechart}</div>
       {!props.preview && (
-        <div
-          style={{
-            flex: 0,
-            marginBottom: 20,
-          }}
+        <Popover
+					trigger="click"
+					placement="bottomRight"
+          content={
+            <div
+              style={{
+                flex: 0,
+                marginBottom: 20,
+              }}
+            >
+              <Form>
+                <Form.Item label="Интервал отображения">
+                  <InputNumber
+                    size="small"
+                    value={renderRange[1]}
+                    onPressEnter={(e) => e.target.blur()}
+                    onChange={(e) => {
+                      if (typeof e === "number" && e >= 0) {
+                        setRenderRange((old) => {
+                          if (e > old[0]) return [old[0], e];
+                          return old;
+                        });
+                      }
+                    }}
+                    parser={(e) => {
+                      if (e.slice(-1) === ",") return e.slice(0, -1) + ".";
+                      return e;
+                    }}
+                  ></InputNumber>
+                </Form.Item>
+                <Form.Item label="Количество отсчетных точек на интервале отображения">
+                  <InputNumber
+                    size="small"
+                    value={numberPoints}
+                    onChange={(e) => {
+                      if (
+                        typeof e === "number" &&
+                        e > 0 &&
+                        e < 10000 &&
+                        Number.isInteger(e)
+                      ) {
+                        setNumberPoints(e);
+                      } else if (e === null) setNumberPoints(500);
+                    }}
+                    onPressEnter={(e) => e.target.blur()}
+                  ></InputNumber>
+                </Form.Item>
+              </Form>
+            </div>
+          }
+          title="Параметры отображения графиков"
         >
-          <Form>
-            <Form.Item label="Интервал отображения">
-              <InputNumber
-                size="small"
-                value={renderRange[1]}
-                onPressEnter={(e) => e.target.blur()}
-                onChange={(e) => {
-                  if (typeof e === "number" && e >= 0) {
-                    setRenderRange((old) => {
-                      if (e > old[0]) return [old[0], e];
-                      return old;
-                    });
-                  }
-                }}
-                parser={(e) => {
-                  if (e.slice(-1) === ",") return e.slice(0, -1) + ".";
-                  return e;
-                }}
-              ></InputNumber>
-            </Form.Item>
-            <Form.Item label="Количество отсчетных точек на интервале отображения">
-              <InputNumber
-                size="small"
-                value={numberPoints}
-                onChange={(e) => {
-                  if (
-                    typeof e === "number" &&
-                    e > 0 &&
-                    e < 10000 &&
-                    Number.isInteger(e)
-                  ) {
-                    setNumberPoints(e);
-                  } else if (e === null) setNumberPoints(500);
-                }}
-                onPressEnter={(e) => e.target.blur()}
-              ></InputNumber>
-            </Form.Item>
-          </Form>
-        </div>
+          <Button
+            type="default"
+						icon={<SettingOutlined />}
+						shape="circle"
+						style={{ position: "absolute", top: 10, right: 10 }}
+          ></Button>
+        </Popover>
       )}
     </div>
   );

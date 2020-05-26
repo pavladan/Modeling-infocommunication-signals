@@ -79,7 +79,9 @@ module.exports = env => {
         }
       ]
     },
-
+		stats:{
+			errorDetails: true,
+		},
     plugins: [clean, html],
     output: {
       filename: "[name].js",
@@ -87,15 +89,15 @@ module.exports = env => {
       publicPath: ""
     }
   };
-  if (mode === "production") {
-    config.plugins.push(
-      new TerserPlugin({
-        parallel: true,
-        terserOptions: {
-          ecma: 6
-        }
-      })
-    );
-  }
+  // if (mode === "production") {
+  //   config.plugins.push(
+  //     new TerserPlugin({
+  //       parallel: true,
+  //       terserOptions: {
+  //         ecma: 6
+  //       }
+  //     })
+  //   );
+  // }
   return config;
 };

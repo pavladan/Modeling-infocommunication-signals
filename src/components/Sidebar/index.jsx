@@ -160,7 +160,7 @@ export default function Sidebar(props) {
           <Col>
             <Title level={2} style={{ color: "var(--text)" }}>
               Сигналы
-              <Tooltip placement="right" title="Add new signal">
+              <Tooltip placement="right" title="Добавить новый сигнал">
                 <Button
                   shape="circle"
                   size="default"

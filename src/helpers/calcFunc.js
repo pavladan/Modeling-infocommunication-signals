@@ -8,18 +8,23 @@ export default ({ func, start = 0, end, numberPoints }) => {
   for (let x = start; x < end; x = fixed(x + pointsFraq)) {
     let y;
     if (func) {
-      y = parseMathJSON({ json: func, start, end }, { t: x });
+      y = parseMathJSON({ json: func, start, end, fraq: pointsFraq }, { t: x });
     }
     data.push({ x, y });
   }
   return data;
 };
-function parseMathJSON({ json, start = 0, end = 0 }, mainVariables = {}) {
+function parseMathJSON({ json, start = 0, end = 0, fraq }, mainVariables = {}) {
   const main = (obj, variables) => {
     try {
-      if (!obj) return;
+      if (obj === undefined) return;
       const _main = (o, v = variables) => main(o, v);
-      if (obj.sup && !(obj.fn === "sum" || obj.fn === "prod" || obj.fn === "cot")) {
+      if (typeof obj === "number") {
+        return obj;
+      } else if (
+        obj.sup &&
+        !(obj.fn === "sum" || obj.fn === "prod" || obj.fn === "cot")
+      ) {
         return fixed(
           Math.pow(
             fixed(_main({ ...obj, sup: undefined })),
@@ -105,17 +110,44 @@ function parseMathJSON({ json, start = 0, end = 0 }, mainVariables = {}) {
               )
             );
           } else if (
-            obj.fn === "cot" &&
-            obj.arg[0] &&
-            obj.sup &&
-            obj.sub
+            (obj.fn === "differentialD" &&
+              obj.arg[0] &&
+              obj.arg[0].fn === "cot" &&
+              obj.arg[1]) ||
+            (obj.fn === "cot" &&
+              obj.arg[0] &&
+              obj.arg[0].fn === "differentialD" &&
+              obj.arg[0].arg[0] &&
+              obj.arg[0].arg[1])
           ) {
-						// it is fixed \int - integral
-
-
-
-
-            // return fixed( );
+            // fexed \int - integral
+            let sub, sup, body, sym;
+            if (obj.fn === "differentialD") {
+              sub = obj.arg[0].sub || start;
+              sup = obj.arg[0].sup || end;
+              body = obj.arg[0].arg[0];
+              sym = obj.arg[1].sym;
+            } else if ((obj.fn = "cot")) {
+              sub = obj.sub || start;
+              sup = obj.sup || end;
+              body = obj.arg[0].arg[0];
+              sym = obj.arg[0].arg[1].sym;
+            }
+            if (
+              sub === undefined ||
+              sup === undefined ||
+              body === undefined ||
+              sym === undefined
+            )
+              return;
+            return fixed(
+              math.integral(_main(sub), _main(sup), fraq, (i) =>
+                _main(body, {
+                  ...variables,
+                  [sym]: i,
+                })
+              )
+            );
           } else if (obj.fn === "list") {
             if (
               (obj.arg.length === 2 && _main(obj.arg[1]) === true) ||
@@ -204,7 +236,7 @@ function parseMathJSON({ json, start = 0, end = 0 }, mainVariables = {}) {
         }
       } else if (obj.group) {
         return fixed(_main(obj.group));
-      }else if (obj.num) {
+      } else if (obj.num) {
         return +obj.num;
       } else if (obj.sym) {
         let value = variables[obj.sym];

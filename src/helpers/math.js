@@ -31,6 +31,13 @@ export default {
     }
     return pr;
 	},
+	integral(from = 0, to = 0, dt = 1, callback){
+		let sum = 0;
+    for (let i = from; i <= to; i=fixed(i+dt)) {
+      sum = fixed(sum + callback(i) * dt);
+    }
+    return sum;
+	},
 	pow(x,y){
 		return fixed(Math.pow(x,y))
 	},

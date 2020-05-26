@@ -127,10 +127,8 @@ export default function FunctionMode(props) {
             latex: "\\operatorname{ceil}(\\placeholder{})",
           },
           {
-            title: "\\begin{cases}x \\\\ y\\end{cases}",
-            latex:
-              "\\begin{cases}\\placeholder{} \\\\ \\placeholder{}\\end{cases}",
-            style: { fontSize: 12 },
+            title: "\\int ^t_0 x dt ",
+            latex: "\\int ^t_0\\left( \\placeholder{}\\differentialD t\\right) ",
           },
           {
             title: "\\lvert x\\rvert",
@@ -186,7 +184,13 @@ export default function FunctionMode(props) {
             title: "f(x)",
             latex: "f(\\placeholder{})",
           },
-        ],
+				],
+				[{
+					title: "\\begin{cases}x \\\\ y\\end{cases}",
+					latex:
+						"\\begin{cases}\\placeholder{} \\\\ \\placeholder{}\\end{cases}",
+					style: { fontSize: 12 },
+				},]
       ],
     },
     {
@@ -197,6 +201,9 @@ export default function FunctionMode(props) {
             title: "≠",
             latex: "\\ne",
             noKatex: true,
+          },
+          {
+            latex: "\\le",
           },
           {
             latex: "<",
@@ -289,7 +296,6 @@ export default function FunctionMode(props) {
             mathFieldConfig={{
               defaultMode: "math",
               locale: "ru-RU",
-              virtualKeyboardMode: "manual",
             }}
           />
         </div>

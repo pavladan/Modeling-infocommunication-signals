@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { MathFieldComponent } from "react-mathlive";
-import mathlive from "mathlive";
 import { Tabs } from "antd";
 import "./FunctionMode.scss";
 import katex from "katex";
@@ -9,7 +8,6 @@ const { TabPane } = Tabs;
 
 export default function FunctionMode(props) {
   const [mathFieltRef, setMathFieltRef] = useState(null);
-  const [inputLatex, setInputLatex] = useState("");
   const [keyboardTab, setKeyboardTab] = useState("0");
 
   const keyboardButtons = [
@@ -184,6 +182,10 @@ export default function FunctionMode(props) {
             title: "\\prod ^{x }_{n\\mathop{=}0}",
             latex: "\\prod ^{\\placeholder{} }_{n\\mathop{=}0}",
           },
+          {
+            title: "f(x)",
+            latex: "f(\\placeholder{})",
+          },
         ],
       ],
     },
@@ -204,9 +206,6 @@ export default function FunctionMode(props) {
           },
           {
             latex: "\\ge",
-          },
-          {
-            latex: "\\emptyset",
           },
           {
             latex: "\\infty",
@@ -282,10 +281,9 @@ export default function FunctionMode(props) {
         />
         <div onClick={(e) => mathFieltRef.$focus()} className="input-field">
           <MathFieldComponent
-            latex={inputLatex}
+            latex={props.latex}
             onChange={(e) => {
-              setInputLatex(e);
-              props.setFunc(mathlive.latexToAST(e));
+							props.setLatex(e);
             }}
             mathFieldRef={(mf) => setMathFieltRef(mf)}
             mathFieldConfig={{

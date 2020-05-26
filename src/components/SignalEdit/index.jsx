@@ -6,6 +6,7 @@ import Chart from "../Chart";
 import fixed from "../../helpers/fixed";
 import FunctionMode from "./FunctionMode";
 import getRandomColor from "../../helpers/getRandomColor";
+import mathlive from "mathlive";
 
 const { Title } = Typography;
 const { TabPane } = Tabs;
@@ -13,21 +14,39 @@ export default function SignalEdit(props) {
   const [signal, setSignal] = useState(
     props.signal || {
       name: "Новый сигнал",
-      initial: { type: "func", func: undefined },
+      initial: { type: "func" },
       color: getRandomColor(),
       show: true,
     }
   );
   const [leaps, setLeaps] = useState(signal.initial.leaps || []);
   const [func, setFunc] = useState(signal.initial.func || undefined);
+  const [funcLatex, setFuncLatex] = useState(
+    signal.initial.funcLatex || undefined
+  );
+
   const [activeTab, setActiveTab] = useState(
     signal.initial.type == "table" ? "0" : "1"
   );
+
+  useEffect(() => {
+    if (funcLatex) {
+      const fixedLatex = funcLatex
+        .replace(/\\le /g, "\\sim ")
+        .replace(/\\ll /g, "\\lt ")
+        .replace(/\\gg /g, "\\gt ")
+        .replace(/\\int /g, "\\cot ");
+      const ast = mathlive.latexToAST(fixedLatex);
+      console.log(fixedLatex, ast);
+      setFunc(ast);
+    }
+  }, [funcLatex]);
+
   const getTabInitial = () => {
     if (activeTab === "0") {
       return { type: "table", leaps };
     } else if (activeTab === "1") {
-      return { type: "func", func };
+      return { type: "func", func, funcLatex };
     }
     return {};
   };
@@ -118,7 +137,7 @@ export default function SignalEdit(props) {
                 <TableMode leaps={leaps} setLeaps={setLeaps} />
               </TabPane>
               <TabPane tab="Функция" key="1">
-                <FunctionMode func={func} setFunc={setFunc} />
+                <FunctionMode latex={funcLatex} setLatex={setFuncLatex} />
               </TabPane>
               <TabPane tab="Импорт" key="2"></TabPane>
             </Tabs>

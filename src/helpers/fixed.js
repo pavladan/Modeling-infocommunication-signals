@@ -1,3 +1,5 @@
-export default (number)=>{
-	return +(number).toFixed(10);
-}
+export default (number) => {
+  if (typeof number === "number") {
+    return +number.toFixed(10);
+  }
+};

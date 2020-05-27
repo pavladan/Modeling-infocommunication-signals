@@ -148,15 +148,60 @@ function parseMathJSON({ json, start = 0, end = 0, fraq }, mainVariables = {}) {
                 })
               )
             );
+          } else if (obj.fn === "brace" && obj.arg[0]) {
+            if (obj.arg[0].fn === "list") {
+              return obj.arg[0].arg.some(
+                (a) => fixed(_main(a)) === variables.t
+              );
+            } else {
+              return fixed(_main(obj.arg[0])) === variables.t;
+            }
           } else if (obj.fn === "list") {
-            if (
-              (obj.arg.length === 2 && _main(obj.arg[1]) === true) ||
-              obj.arg.length === 1
-            ) {
-              const result = _main(obj.arg[0]);
-              if (typeof result === "number") {
-                return fixed(result);
+            if (obj.arg.length > 1) {
+              const parentheses = [];
+              const squareBrackets = [];
+              for (let i = 1; i < obj.arg.length; i++) {
+                const cur = _main(obj.arg[i]);
+                const next = obj.arg[i + 1] && _main(obj.arg[i + 1]);
+                if (typeof cur === "number" && typeof next === "number") {
+                  parentheses.push([cur, next]);
+                  i++;
+                } else if (typeof cur === "boolean") {
+                  squareBrackets.push(cur);
+                }
               }
+              if (
+                parentheses.some(
+                  (e) => variables.t > e[0] && variables.t < e[1]
+                ) ||
+                squareBrackets.some((e) => e === true)
+              ) {
+                return fixed(_main(obj.arg[0]));
+              }
+            }
+          } else if (
+            obj.fn.includes("brack") &&
+            obj.arg[0] &&
+            obj.arg[0].fn === "list" &&
+            obj.arg[0].arg &&
+            obj.arg[0].arg.length === 2
+          ) {
+            const rightValue = [
+              fixed(_main(obj.arg[0].arg[0])),
+              fixed(_main(obj.arg[0].arg[1])),
+            ];
+            if (obj.fn === "\\lbrack\\rbrack") {
+              return (
+                variables.t >= rightValue[0] && variables.t <= rightValue[1]
+              );
+            } else if (obj.fn === "(\\rbrack") {
+              return (
+                variables.t > rightValue[0] && variables.t <= rightValue[1]
+              );
+            } else if (obj.fn === "\\lbrack)") {
+              return (
+                variables.t >= rightValue[0] && variables.t < rightValue[1]
+              );
             }
           } else if (obj.fn === "lt" && obj.arg.length === 2) {
             return fixed(_main(obj.arg[0])) < fixed(_main(obj.arg[1]));
@@ -173,7 +218,6 @@ function parseMathJSON({ json, start = 0, end = 0, fraq }, mainVariables = {}) {
             return fixed(_main(obj.arg[0])) !== fixed(_main(obj.arg[1]));
           } else if (obj.fn === "elementof" && obj.arg.length === 2) {
             const leftValue = fixed(_main(obj.arg[0]));
-
             if (obj.arg[1].fn === "list" && obj.arg[1].arg.length === 2) {
               return (
                 leftValue > fixed(_main(obj.arg[1].arg[0])) &&
@@ -198,14 +242,14 @@ function parseMathJSON({ json, start = 0, end = 0, fraq }, mainVariables = {}) {
               } else if (obj.arg[1].fn === "\\lbrack)") {
                 return leftValue >= rightValue[0] && leftValue < rightValue[1];
               }
-            } else if (
-              obj.arg[1].fn === "brace" &&
-              obj.arg[1].arg[0] &&
-              obj.arg[1].arg[0].fn === "list"
-            ) {
-              return obj.arg[1].arg[0].arg.some(
-                (a) => fixed(_main(a)) === leftValue
-              );
+            } else if (obj.arg[1].fn === "brace" && obj.arg[1].arg[0]) {
+              if (obj.arg[1].arg[0].fn === "list") {
+                return obj.arg[1].arg[0].arg.some(
+                  (a) => fixed(_main(a)) === leftValue
+                );
+              } else {
+                return fixed(_main(obj.arg[1].arg[0])) === leftValue;
+              }
             } else {
               const rightValue = _main(obj.arg[1]);
               if (rightValue) {
@@ -224,10 +268,22 @@ function parseMathJSON({ json, start = 0, end = 0, fraq }, mainVariables = {}) {
         } else if (obj.args) {
           if (obj.fn === "cases") {
             for (let i = 0; i < obj.args.length; i++) {
-              const responseComprasion =
-                obj.args[i][0] && _main(obj.args[i][0]);
-              if (responseComprasion !== undefined) {
-                return responseComprasion;
+              if (obj.args[i][0]) {
+                if (
+									obj.args[i][0].fn === "f" &&
+									obj.args[i][0].arg&&
+                  obj.args[i][0].arg.length === 1
+                ) {
+                  const newT = fixed(_main(obj.args[i][0].arg[0]));
+                  if (newT !== variables.t && newT >= start && newT <= end) {
+                    const y = _main(obj, { t: newT });
+                    return y && fixed(y);
+                  }
+                }
+                const responseComprasion = _main(obj.args[i][0]);
+                if (responseComprasion !== undefined) {
+                  return responseComprasion;
+                }
               }
             }
           }

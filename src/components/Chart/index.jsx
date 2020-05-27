@@ -34,7 +34,7 @@ export default function Chart(props) {
   useEffect(() => {
     console.log(
       "Need FIX NaN and Infinity and -Infinity !!!",
-      "\nDont job <= and Integral !!!!!!"
+      "\nDont job ∪  - (and)  !!!!!!"
     );
     const interval = 200;
     let direction;
@@ -101,7 +101,8 @@ export default function Chart(props) {
       } else if (chart.initial.type === "result") {
         return calcReaction(
           getChartData(chart.initial.signal, range),
-          chart.initial.chain
+					chart.initial.chain,
+					chart.initial.centralFraq
         );
       }
     } else if (chart.data) {

@@ -295,7 +295,8 @@ export default function FunctionMode(props) {
             mathFieldRef={(mf) => setMathFieltRef(mf)}
             mathFieldConfig={{
               defaultMode: "math",
-              locale: "ru-RU",
+							locale: "ru-RU",
+							smartSuperscript: false,
             }}
           />
         </div>

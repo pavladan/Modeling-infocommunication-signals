@@ -4,9 +4,12 @@ import { Modal, Typography, Button, Form, Input, InputNumber } from "antd";
 const { Title } = Typography;
 
 export default function CalcSettings(props) {
-const [fraq,setFraq]=useState(6)
-  const handleReset = _ => {};
-  const handleSave = _ => {
+  const [fraq, setFraq] = useState(props.centralFraq);
+  const handleReset = (_) => {
+    setFraq(6);
+  };
+  const handleSave = (_) => {
+    props.setCentralFraq(fraq);
     props.close();
   };
   return (
@@ -26,10 +29,10 @@ const [fraq,setFraq]=useState(6)
           </Button>,
           <Button key="submit" type="primary" onClick={handleSave}>
             Сохранить
-          </Button>
+          </Button>,
         ]}
       >
-        <Form name="settings" >
+        <Form name="settings">
           {/* <Form.Item label="Display interval" required>
             <Input placeholder="Enter interval" suffix="µs"></Input>
           </Form.Item>
@@ -40,7 +43,12 @@ const [fraq,setFraq]=useState(6)
             <InputNumber min={1} style={{ width: "100%" }}></InputNumber>
           </Form.Item> */}
           <Form.Item label="Граничная (центральная) частота звена" required>
-            <Input placeholder="Введите частоту" suffix="МГц" value={fraq} onChange={e=>setFraq(e.target.value)}></Input>
+            <Input
+              placeholder="Введите частоту"
+              suffix="МГц"
+              value={fraq}
+              onChange={(e) => setFraq(e.target.value)}
+            ></Input>
           </Form.Item>
         </Form>
       </Modal>

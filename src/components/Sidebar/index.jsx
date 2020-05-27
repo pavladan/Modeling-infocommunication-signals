@@ -26,9 +26,6 @@ import { ChromePicker } from "react-color";
 import SignalEdit from "../SignalEdit";
 import ChainEdit from "../ChainEdit";
 import CalcSettings from "../CalcSettings";
-import calcReaction from "../../helpers/calcReaction";
-import calcLeaps from "../../helpers/calcLeaps";
-import calcFunc from "../../helpers/calcFunc";
 import getRandomColor from "../../helpers/getRandomColor";
 
 const { Title, Text } = Typography;
@@ -59,6 +56,7 @@ export default function Sidebar(props) {
   const [signalEditOpen, setSignalEditOpen] = useState(false);
   const [chainEditOpen, setChainEditOpen] = useState(false);
   const [calcSettingsOpen, setClacSettingsOpen] = useState(false);
+	const [centralFraq, setCentralFraq] = useState(6);
 
   const editChain = (newChain) => {
     setChains((old) => {
@@ -140,7 +138,8 @@ export default function Sidebar(props) {
       initial: {
         type: "result",
         signal: curSignal,
-        chain: curChain.variables,
+				chain: curChain.variables,
+				centralFraq
       },
     });
   };
@@ -437,7 +436,7 @@ export default function Sidebar(props) {
         />
       )}
       {calcSettingsOpen && (
-        <CalcSettings visible close={(_) => setClacSettingsOpen(false)} />
+        <CalcSettings centralFraq={centralFraq} setCentralFraq={setCentralFraq} visible close={(_) => setClacSettingsOpen(false)} />
       )}
     </div>
   );

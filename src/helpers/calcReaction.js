@@ -22,7 +22,7 @@ function normalizing(data) {
   });
 }
 
-export default function calcReaction(signalData, chainVar) {
+export default function calcReaction(signalData, chainVar, centralFraq) {
   signalData = normalizing(signalData);
   console.log(signalData, chainVar);
   const {
@@ -133,8 +133,8 @@ export default function calcReaction(signalData, chainVar) {
         Cz *
         math.prod(1, N1, (i) => a1s[i]) *
         math.prod(1, N2, (i) => math.pow(a2e[i], 2) + math.pow(w2e[i], 2))
-		);
-		
+    );
+
   const R_0_ozo = (n) => f(R_0_ozo_without_a_n0(n) * a_n0(n));
 
   const R_1_ozo = (n) => {

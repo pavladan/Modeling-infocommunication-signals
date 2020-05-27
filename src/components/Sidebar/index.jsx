@@ -186,7 +186,7 @@ export default function Sidebar(props) {
           </Col>
         </Row>
         <Row gutter={8}>
-          <Col flex="auto">
+          <Col flex="auto" style={{width:45}}>
             <Select
               showSearch
               style={{ width: "100%" }}

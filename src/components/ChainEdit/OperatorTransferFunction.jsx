@@ -12,7 +12,7 @@ export default function OperatorTransferFunction(props) {
   };
   const katexRef = useCallback((node) => {
     if (node) {
-			// ^{\\colorbox{none}{n3x}}
+      // ^{\\colorbox{none}{n3x}}
       katex.render(
         `K\\left(P\\right)=\\frac{G\\left(P\\right)}{CV\\left(P\\right)}=\\frac{\\prod ^{\\colorbox{none}{N3}}_{x\\mathop{=}1}\\left(P+\\colorbox{none}{a3x}\\right)\\cdot \\prod ^{\\colorbox{none}{N4}}_{y=1}\\left(P^2+2\\colorbox{none}{a4y}P+\\colorbox{none}{a4y}^2+\\colorbox{none}{w4y}^2\\right)}{\\colorbox{none}{Cz}\\prod ^{\\colorbox{none}{N1}}_{s=1}\\left(P+\\colorbox{none}{a1s}\\right)\\cdot \\prod ^{\\colorbox{none}{N2}}_{e=1}\\left(P^2+2\\colorbox{none}{a2e}P+\\colorbox{none}{a2e}^2+\\colorbox{none}{w2e}^2\\right)}`,
         node,
@@ -103,7 +103,7 @@ function PrimeNumbersInput(props) {
     <InputNumber
       value={props.value}
       onChange={(e) => {
-        if (typeof e === "number" && e >= 1 && e < 10000 && Number.isInteger(e))
+        if (typeof e === "number" && e >= 0 && e < 1000 && Number.isInteger(e))
           props.onChange(e);
         else if (e === null) props.onChange(1);
       }}
@@ -133,7 +133,7 @@ function SimpleNumbersInput(props) {
         e.target.blur();
       }}
       size="small"
-      style={{ position: "relative", zIndex: 1, width: 45 }}
+      style={{ position: "relative", zIndex: 1, width: 75 }}
       tabIndex={0}
     ></InputNumber>
   );
@@ -172,7 +172,7 @@ function TableValueView(props) {
               return e;
             }}
             tabIndex={0}
-            style={{ borderColor: el.value === null && "red" }}
+            style={{ borderColor: el.value === null && "red", width: 130 }}
             onChange={(e) => {
               if (
                 typeof e === "number" &&

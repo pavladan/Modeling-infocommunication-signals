@@ -270,8 +270,8 @@ function parseMathJSON({ json, start = 0, end = 0, fraq }, mainVariables = {}) {
             for (let i = 0; i < obj.args.length; i++) {
               if (obj.args[i][0]) {
                 if (
-									obj.args[i][0].fn === "f" &&
-									obj.args[i][0].arg&&
+                  obj.args[i][0].fn === "f" &&
+                  obj.args[i][0].arg &&
                   obj.args[i][0].arg.length === 1
                 ) {
                   const newT = fixed(_main(obj.args[i][0].arg[0]));

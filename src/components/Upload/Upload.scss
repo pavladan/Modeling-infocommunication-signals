@@ -1,0 +1,23 @@
+.Upload {
+	display: flex;
+	align-items: center;
+  input[type="file"] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    display: block;
+    background: none;
+    border: none;
+    opacity: 0;
+    color: transparent;
+    cursor: pointer;
+    &:focus {
+      outline: none;
+    }
+	}
+	.file-name{
+		margin-left: 10px;
+	}
+}

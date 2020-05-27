@@ -105,8 +105,10 @@ export default function calcReaction(signalData, chainVar, centralFraq) {
   };
   const Psi = [];
   const N = signalData.length - 1;
-  const T = signalData[N - 1].x;
-  const delta_t = signalData[1] ? signalData[1].x - signalData[0].x : 0;
+  const T = f(signalData[N - 1].x * centralFraq);
+  const delta_t = signalData[1]
+    ? f((signalData[1].x - signalData[0].x) * centralFraq)
+    : 0;
 
   const fi_n = (n) => signalData[n].y;
   const fi_n1 = (n) => signalData[n + 1].y;

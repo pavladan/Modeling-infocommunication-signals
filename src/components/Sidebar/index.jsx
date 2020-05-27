@@ -27,6 +27,7 @@ import SignalEdit from "../SignalEdit";
 import ChainEdit from "../ChainEdit";
 import CalcSettings from "../CalcSettings";
 import getRandomColor from "../../helpers/getRandomColor";
+import {saveAs} from 'file-saver';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -142,7 +143,19 @@ export default function Sidebar(props) {
 				centralFraq
       },
     });
-  };
+	};
+	
+	const saveSignal = ()=>{
+		const cur = props.signals.find((e) => e.id === props.signal)
+		const blob = new Blob([JSON.stringify(cur.initial)], {type : 'application/json'});
+		saveAs(blob, cur.name+".sg");
+	}
+
+	const saveChart = ()=>{
+		const cur = chains.find((e) => chain === e.id)
+		const blob = new Blob([JSON.stringify(cur.variables)], {type : 'application/json'});
+		saveAs(blob, cur.name+".zv");
+	}
   return (
     <div
       className="Sidebar"
@@ -209,7 +222,8 @@ export default function Sidebar(props) {
               <Button
                 disabled={props.signal === undefined}
                 shape="circle"
-                icon={<DownloadOutlined />}
+								icon={<DownloadOutlined />}
+								onClick={saveSignal}
               ></Button>
             </Tooltip>
           </Col>
@@ -284,7 +298,8 @@ export default function Sidebar(props) {
               <Button
                 disabled={chain === undefined}
                 shape="circle"
-                icon={<DownloadOutlined />}
+								icon={<DownloadOutlined />}
+								onClick={saveChart}
               ></Button>
             </Tooltip>
           </Col>

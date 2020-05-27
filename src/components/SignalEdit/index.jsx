@@ -7,6 +7,7 @@ import fixed from "../../helpers/fixed";
 import FunctionMode from "./FunctionMode";
 import getRandomColor from "../../helpers/getRandomColor";
 import mathlive from "mathlive";
+import Upload from "../Upload";
 
 const { Title } = Typography;
 const { TabPane } = Tabs;
@@ -24,6 +25,7 @@ export default function SignalEdit(props) {
   const [funcLatex, setFuncLatex] = useState(
     signal.initial.funcLatex || undefined
   );
+  const [importData, setImportData] = useState();
 
   const [activeTab, setActiveTab] = useState(
     signal.initial.type == "table" ? "0" : "1"
@@ -47,7 +49,9 @@ export default function SignalEdit(props) {
       return { type: "table", leaps };
     } else if (activeTab === "1") {
       return { type: "func", func, funcLatex };
-    }
+    } else if (activeTab === "2"){
+			return importData;
+		}
     return {};
   };
   const getEndSignal = () => {
@@ -58,10 +62,8 @@ export default function SignalEdit(props) {
       });
       const range = delay > 5 ? fixed(delay * 2) : 10;
       return range;
-    } else if (activeTab === "1") {
-      return 10;
-    }
-    return 0;
+    } 
+		return 10;
   };
   const handleSave = (_) => {
     const exitSignal = signal;
@@ -139,7 +141,9 @@ export default function SignalEdit(props) {
               <TabPane tab="Функция" key="1">
                 <FunctionMode latex={funcLatex} setLatex={setFuncLatex} />
               </TabPane>
-              <TabPane tab="Импорт" key="2"></TabPane>
+              <TabPane tab="Импорт" key="2">
+                <Upload accept={".sg"} setImportData={setImportData} />
+              </TabPane>
             </Tabs>
           </Col>
           <Col span={24} md={12} style={{ minHeight: 200 }}>

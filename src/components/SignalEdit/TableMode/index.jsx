@@ -74,7 +74,7 @@ export default function TableMode(props) {
             <Tooltip
               title={
                 <MathFieldComponent
-                  latex="f\mleft(t\mright)=\begin{cases}0,t<\tau  \\ A\cos \mleft(\omega t+\frac{\varphi _0\cdot \pi }{180}\mright),t\ge \tau \end{cases}"
+                  latex="f\mleft(t\mright)=\begin{cases}0,t<\tau  \\ A\cos \mleft(2\pi \omega t+\frac{\varphi _0\cdot \pi }{180}\mright),t\ge \tau \end{cases} "
                   mathFieldConfig={{
                     defaultMode: "math",
                     readOnly: true,

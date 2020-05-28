@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useMemo,
+  useCallback,
+} from "react";
 
 import {
   LineChart,
@@ -20,15 +26,17 @@ import { SettingOutlined } from "@ant-design/icons";
 
 export default function Chart(props) {
   const [data, setData] = useState([]);
-  const [viewRange, setViewRange] = useState([0, 20]);
-  const [renderRange, setRenderRange] = useState([0, 20]);
-  const [numberPoints, setNumberPoints] = useState(100);
+  const [viewRange, setViewRange] = useState([0, 10]);
+  const [renderRange, setRenderRange] = useState([0, 10]);
+  const [numberPoints, setNumberPoints] = useState(12);
   const [moving, setMoving] = useState(false);
   const chartRef = useRef(null);
 
   useEffect(() => {
-    props.staticRange !== undefined &&
+    if (props.staticRange !== undefined) {
       setViewRange((old) => [old[0], props.staticRange]);
+      setRenderRange((old) => [old[0], props.staticRange]);
+    }
   }, [props.staticRange]);
 
   useEffect(() => {
@@ -99,10 +107,11 @@ export default function Chart(props) {
           numberPoints,
         });
       } else if (chart.initial.type === "result") {
+        const signalData = getChartData(chart.initial.signal, range);
         return calcReaction(
-          getChartData(chart.initial.signal, range),
-					chart.initial.chain,
-					chart.initial.centralFraq
+          signalData,
+          chart.initial.chain,
+          chart.initial.centralFraq
         );
       }
     } else if (chart.data) {
@@ -110,15 +119,7 @@ export default function Chart(props) {
     }
     return [];
   };
-  useEffect(() => {
-    setData(
-      calc({
-        start: renderRange[0],
-        end: renderRange[1],
-        numberPoints,
-      })
-    );
-  }, [props.charts, renderRange, numberPoints]);
+
   const calc = ({ start, end, numberPoints }) => {
     if (!props.charts || props.charts.length === 0) return [];
     console.log("calc");
@@ -144,6 +145,16 @@ export default function Chart(props) {
       .map((e) => ({ x: +e[0], ...e[1] }))
       .sort((a, b) => a.x - b.x);
   };
+
+  useMemo(() => {
+    setData(
+      calc({
+        start: renderRange[0],
+        end: renderRange[1],
+        numberPoints,
+      })
+    );
+  }, [props.charts, renderRange, numberPoints]);
   const calcValueFromPx = (px) => {
     const widthChartPx = chartRef.current.state.offset.width;
     const widthValue = viewRange[1] - viewRange[0];
@@ -220,7 +231,10 @@ export default function Chart(props) {
         margin={{ top: 30, right: 40, left: 10, bottom: 5 }}
         onMouseDown={!props.preview && handleMove}
         ref={chartRef}
-        style={{ userSelect: "none", cursor: moving ? "grabbing" : "grab" }}
+        style={{
+          userSelect: "none",
+          cursor: props.preview ? "default" : moving ? "grabbing" : "grab",
+        }}
       >
         <XAxis
           allowDataOverflow
@@ -268,8 +282,8 @@ export default function Chart(props) {
       <div style={{ flex: 1 }}>{rechart}</div>
       {!props.preview && (
         <Popover
-					trigger="click"
-					placement="bottomRight"
+          trigger="click"
+          placement="bottomRight"
           content={
             <div
               style={{
@@ -304,7 +318,7 @@ export default function Chart(props) {
                     onChange={(e) => {
                       if (
                         typeof e === "number" &&
-                        e > 0 &&
+                        e > 1 &&
                         e < 10000 &&
                         Number.isInteger(e)
                       ) {
@@ -321,9 +335,9 @@ export default function Chart(props) {
         >
           <Button
             type="default"
-						icon={<SettingOutlined />}
-						shape="circle"
-						style={{ position: "absolute", top: 10, right: 10 }}
+            icon={<SettingOutlined />}
+            shape="circle"
+            style={{ position: "absolute", top: 10, right: 10 }}
           ></Button>
         </Popover>
       )}

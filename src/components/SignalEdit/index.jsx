@@ -60,10 +60,10 @@ export default function SignalEdit(props) {
       leaps.forEach((e) => {
         delay = Math.max(delay, e.delay);
       });
-      const range = delay > 5 ? fixed(delay * 2) : 10;
+      const range = delay > 0.5 ? fixed(delay * 2) : 1;
       return range;
     } 
-		return 10;
+		return 1;
   };
   const handleSave = (_) => {
     const exitSignal = signal;

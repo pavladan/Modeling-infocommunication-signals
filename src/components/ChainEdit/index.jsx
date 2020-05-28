@@ -29,9 +29,9 @@ export default function ChainEdit(props) {
   const [importVariables, setImportVariables] = useState();
   const handleSave = (_) => {
     if (activeTab === "0") {
-      props.save({ name: title, variables });
+      props.save({...props.chain, name: title, variables });
     } else if (activeTab === "1") {
-      props.save({ name: title, variables: importVariables });
+      props.save({...props.chain, name: title, variables: importVariables });
     }
     props.close();
   };

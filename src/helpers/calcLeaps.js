@@ -15,7 +15,7 @@ export default ({ leaps = [], start = 0, end, numberPoints }) => {
                 fixed(
                   amplitude *
                     Math.cos(
-                      fixed(x * fraquency) + fixed(phase * (Math.PI / 180))
+                      fixed(x * fraquency * 2 * Math.PI) + fixed(phase * (Math.PI / 180))
                     )
                 )
             );

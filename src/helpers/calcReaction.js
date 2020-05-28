@@ -22,26 +22,10 @@ function normalizing(data) {
   });
 }
 
-export default function calcReaction(signalData, chainVar, centralFraq) {
-  signalData = normalizing(signalData);
-  console.log(signalData, chainVar);
-  const {
-    Cz,
-    N1,
-    N2,
-    N3,
-    N4,
-    a1s,
-    a2e,
-    a3x,
-    a4y,
-    n1s,
-    n2e,
-    n3x,
-    n4y,
-    w2e,
-    w4y,
-  } = chainVar;
+export default function calcReaction(inputSignalData, chainVar, centralFraq) {
+  const signalData = normalizing(inputSignalData);
+  console.log(signalData, chainVar, centralFraq);
+  const { Cz, N1, N2, N3, N4, a1s, a2e, a3x, a4y, w2e, w4y } = chainVar;
   const Kz = (P, exceptions = {}) => {
     return f(
       f(
@@ -125,9 +109,10 @@ export default function calcReaction(signalData, chainVar, centralFraq) {
   const C_n1 = (n) => f(-1 / fi_n(n));
   const C_n2 = (n) => f(-1 / fi_n1(n));
 
-  const R_0_ozo_without_a_n0 = (n) =>
+  const R_0_ozo = (n, exceptions = {}) =>
     f(
-      math.prod(1, N3, (i) => a3x[i]) *
+      (!exceptions.a_n0 ? a_n0(n) : 1) *
+        (!exceptions.N3 ? math.prod(1, N3, (i) => a3x[i]) : 1) *
         math.prod(1, N4, (i) => math.pow(a4y[i], 2) + math.pow(w4y[i], 2))
     ) /
     f(
@@ -137,31 +122,36 @@ export default function calcReaction(signalData, chainVar, centralFraq) {
         math.prod(1, N2, (i) => math.pow(a2e[i], 2) + math.pow(w2e[i], 2))
     );
 
-  const R_0_ozo = (n) => f(R_0_ozo_without_a_n0(n) * a_n0(n));
-
   const R_1_ozo = (n) => {
+    const exceptions = {};
     if (fi_n(n) === fi_n1(n)) {
-      return R_0_ozo_without_a_n0(n);
+      exceptions.a_n0 = true;
     }
+    if (Object.values(a3x).some((e) => e === 0)) {
+      exceptions.N3 = true;
+    }
+
     return f(
-      R_0_ozo(n) *
-        f(
-          math.sum(1, N3, (i) => 1 / a3x[i]) +
-            1 / a_n0(n) +
-            math.sum(
-              1,
-              N4,
-              (i) =>
-                f(2 * a4y[i]) / f(math.pow(a4y[i], 2) + math.pow(w4y[i], 2))
-            ) -
-            math.sum(1, N1, (i) => 1 / a1s[i]) -
-            math.sum(
-              1,
-              N2,
-              (i) =>
-                f(2 * a2e[i]) / f(math.pow(a2e[i], 2) + math.pow(w2e[i], 2))
+      R_0_ozo(n, exceptions) *
+        (Object.keys(exceptions).length === 0
+          ? f(
+              math.sum(1, N3, (i) => 1 / a3x[i]) +
+                1 / a_n0(n) +
+                math.sum(
+                  1,
+                  N4,
+                  (i) =>
+                    f(2 * a4y[i]) / f(math.pow(a4y[i], 2) + math.pow(w4y[i], 2))
+                ) -
+                math.sum(1, N1, (i) => 1 / a1s[i]) -
+                math.sum(
+                  1,
+                  N2,
+                  (i) =>
+                    f(2 * a2e[i]) / f(math.pow(a2e[i], 2) + math.pow(w2e[i], 2))
+                )
             )
-        )
+          : 1)
     );
   };
   const R_0_jz1s = (a_nj, C_nj, i) =>
@@ -175,7 +165,7 @@ export default function calcReaction(signalData, chainVar, centralFraq) {
   const R_0_2z1s = (n, i) => R_0_jz1s(a_n2(n), C_n2(n), i);
 
   const R_0_jz2eComplex = (a_nj, C_nj, i) => {
-    const P = Complex.from(-a2e[i], w2e[i]).finalize();
+		const P = Complex.from(-a2e[i], w2e[i]).finalize();
     return P.add(a_nj)
       .divide(P.pow(2).multiply(C_nj))
       .multiply(
@@ -189,8 +179,8 @@ export default function calcReaction(signalData, chainVar, centralFraq) {
   const R_0_2z2e = (n, i) => f(R_0_jz2eComplex(a_n2(n), C_n2(n), i).abs());
   const fi_0_2z2e = (n, i) => f(R_0_jz2eComplex(a_n2(n), C_n2(n), i).angle());
 
-  const M_11s = (i) => f(math.pow(1 - math.exp(a1s[i]), -1));
-  const M_21s = (i) => f(math.pow(math.exp(-a1s[i]) - 1, -1));
+  const M_11s = (i) => f(math.pow(1 - math.exp(a1s[i] * T), -1));
+  const M_21s = (i) => f(math.pow(math.exp(-a1s[i] * T) - 1, -1));
   const _M_and_N_znam = (i) =>
     f(
       math.exp(2 * a2e[i] * T) -
@@ -207,6 +197,7 @@ export default function calcReaction(signalData, chainVar, centralFraq) {
         math.exp(a2e[i] * T) * math.cos(w2e[i] * T) - math.exp(2 * a2e[i] * T)
       ) / _M_and_N_znam(i)
     );
+
   for (let n = 0; n <= N - 1; n++) {
     const sum1 = math.sum(
       1,
@@ -317,17 +308,19 @@ export default function calcReaction(signalData, chainVar, centralFraq) {
     );
     const Psi_n = -f(R_0_ozo(n) * n * delta_t) - R_1_ozo(n) + sum1 + sum2;
 
-    console.log("-----------------", n, "---------------");
-    console.log("fi_n/fi_n+1", fi_n(n), fi_n1(n));
-    console.log("a_n0(1,2)", a_n0(n), a_n1(n), a_n2(n));
-    console.log("C_n0(1,2)", C_n0(n), C_n1(n), C_n2(n));
-    console.log("R_0/1_ozo", R_0_ozo(n), R_1_ozo(n));
-    console.log("R_0_jz1s", R_0_1z1s(n, 1), R_0_2z1s(n, 1));
-    console.log("R_0_1z2e/fi_0_1z2e", R_0_1z2e(n, 1), fi_0_1z2e(n, 1));
-    console.log("R_0_2z2e/fi_0_2z2e", R_0_2z2e(n, 1), fi_0_2z2e(n, 1));
-    console.log("M1(2)1s", M_11s(1), M_21s(1));
-    console.log("M(N)12e", M_12e(1), N_12e(1), N_22e(1));
-    Psi.push({ x: f(n * delta_t), y: f(Psi_n) });
+    // console.log("-----------------", n, "---------------");
+    // console.log("fi_n/fi_n+1", fi_n(n), fi_n1(n));
+    // console.log("a_n0(1,2)", a_n0(n), a_n1(n), a_n2(n));
+    // console.log("C_n0(1,2)", C_n0(n), C_n1(n), C_n2(n));
+    // console.log("R_0/1_ozo", R_0_ozo(n), R_1_ozo(n));
+    // console.log("R_0_jz1s", R_0_1z1s(n, 1), R_0_2z1s(n, 1));
+    // console.log("R_0_1z2e/fi_0_1z2e", R_0_1z2e(n, 1), fi_0_1z2e(n, 1));
+    // console.log("R_0_2z2e/fi_0_2z2e", R_0_2z2e(n, 1), fi_0_2z2e(n, 1));
+    // console.log("M1(2)1s", M_11s(1), M_21s(1));
+    // console.log("M(N)12e", M_12e(1), N_12e(1), N_22e(1));
+    // console.log("sum1", sum1);
+    // console.log("sum2", sum2);
+    Psi.push({ x: signalData[n].x, y: f(Psi_n) });
   }
   console.log(Psi);
   return Psi;

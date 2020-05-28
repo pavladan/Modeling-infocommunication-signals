@@ -16,12 +16,6 @@ export default function App() {
       id: "s0",
       show: false,
       color: "red",
-      data: [
-        { x: 0, y: 2 },
-        { x: 1, y: 4 },
-        { x: 3, y: 3 },
-        { x: 4, y: 6 },
-      ],
       initial: {
         type: "table",
         leaps: [
@@ -29,7 +23,7 @@ export default function App() {
 						key:0,
             amplitude: 1,
             delay: 0,
-            fraquency: 1,
+            fraquency: 6,
             phase: -90,
           },
         ],
@@ -40,12 +34,6 @@ export default function App() {
       id: "s1",
       show: false,
       color: "blue",
-      data: [
-        { x: 0, y: 1 },
-        { x: 1, y: 2 },
-        { x: 2, y: 3 },
-        { x: 3, y: 4 },
-      ],
       initial: {
         type: "table",
         leaps: [
@@ -53,42 +41,15 @@ export default function App() {
 						key:0,
             amplitude: 1,
             delay: 0,
-            fraquency: 1,
+            fraquency: 6,
             phase: 0,
           },
         ],
       },
     },
-    {
-      name: "leap",
-      id: "s2",
-      show: false,
-      color: "green",
-      data: [
-        { x: 0, y: 7 },
-        { x: 1, y: 7 },
-        { x: 2, y: 7 },
-        { x: 3, y: 0 },
-        { x: 4, y: 7 },
-      ],
-      initial: {
-        type: "none",
-      },
-    },
   ]);
   const [signal, setSignal] = useState();
   const [results, setResults] = useState([
-    // {
-      // name: "Result signal 1",
-      // show: false,
-      // color: "#000",
-    //   id: "r0",
-    //   data: [
-    //     { x: 2, y: 4 },
-    //     { x: 8, y: -5 },
-    //   ],
-    // },
-    // { name: "Result signal 2", show: true, color: "#eee", id: "r1", data: [] },
   ]);
   const [sidebarWidth, setSidebarWidth] = useState(0);
 

@@ -35,21 +35,9 @@ const { Option } = Select;
 export default function Sidebar(props) {
   const [chains, setChains] = useState([
     {
-      name: "T",
+      name: "ФНЧ С05-50-50",
       id: "c0",
-      variables: {
-        Cz: 1,
-        N1: 1,
-        N2: 1,
-        N3: 1,
-        N4: 1,
-        a1s: { 1: 1 },
-        a2e: { 1: 1 },
-        a3x: { 1: 1 },
-        a4y: { 1: 1 },
-        w2e: { 1: 1 },
-        w4y: { 1: 1 },
-      },
+      variables: {"Cz":38.37555614,"N1":1,"N2":2,"N3":0,"N4":2,"a1s":{"1":0.333895562},"a2e":{"1":0.206618944,"2":0.05270029},"a3x":{},"a4y":{"1":0,"2":0},"w2e":{"1":0.708416409,"2":0.992817444},"w4y":{"1":1.94802866,"2":1.348138999}},
     },
   ]);
   const [chain, setChain] = useState();
@@ -133,7 +121,7 @@ export default function Sidebar(props) {
     const curSignal = props.signals.find((e) => e.id === props.signal);
     const curChain = chains.find((e) => chain === e.id);
     props.addResult({
-      name: `${curSignal.name} / ${curChain.name}`,
+      name: `${curSignal.name} / ${curChain.name} (${centralFraq})`,
       show: true,
       color: getRandomColor(),
       initial: {

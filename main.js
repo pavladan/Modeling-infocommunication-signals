@@ -37,7 +37,8 @@ function createWindow() {
     webPreferences: {
       devTools: isDev
     }
-  });
+	});
+	win.removeMenu();
   if (isDev) {
     win.loadURL("http://localhost:8080");
     win.webContents.openDevTools();

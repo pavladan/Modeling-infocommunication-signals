@@ -15,7 +15,7 @@ export default function SignalEdit(props) {
   const [signal, setSignal] = useState(
     props.signal || {
       name: "Новый сигнал",
-      initial: { type: "func" },
+      initial: { type: "table" },
       color: getRandomColor(),
       show: true,
     }

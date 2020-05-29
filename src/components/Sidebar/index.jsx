@@ -51,6 +51,40 @@ export default function Sidebar(props) {
         w4y: { "1": 1.94802866, "2": 1.348138999 },
       },
     },
+    {
+      name: "ПФ С05-50-50",
+      id: "c1",
+      variables: {
+        Cz: 76.75111227,
+        N1: 0,
+        N2: 5,
+        N3: 1,
+        N4: 4,
+        a1s: {},
+        a2e: {
+          "1": 0.060674138,
+          "2": 0.042635334,
+          "3": 0.016349126,
+          "4": 0.010001019,
+          "5": 0.08347389,
+        },
+        a3x: { "1": 0 },
+        a4y: { "1": 0, "2": 0, "3": 0, "4": 0 },
+        w2e: {
+          "1": 1.191391538,
+          "2": 0.837183333,
+          "3": 1.278467384,
+          "4": 0.782058662,
+          "5": 0.996509965,
+        },
+        w4y: {
+          "1": 1.599291292,
+          "2": 0.625276962,
+          "3": 1.392303636,
+          "4": 0.718234137,
+        },
+      },
+    },
   ]);
   const [chain, setChain] = useState();
 
@@ -60,7 +94,7 @@ export default function Sidebar(props) {
   const [centralFraq, setCentralFraq] = useState(6);
 
   useEffect(() => {
-		props.setForceGetData(false);
+    props.setForceGetData(false);
     if (!signalEditOpen) {
       props.setForceGetData(true);
     }
@@ -85,7 +119,7 @@ export default function Sidebar(props) {
 
   const signalOptions = props.signals.map((s) => (
     <Option value={s.id} key={s.id} title={s.name}>
-      <Row>
+      <Row style={{ flexWrap: "nowrap" }}>
         <Col>
           <div
             className="color"
@@ -98,7 +132,9 @@ export default function Sidebar(props) {
             }}
           ></div>
         </Col>
-        <Col flex="auto">{s.name}</Col>
+        <Col flex="auto" style={{ overflow: "hidden", marginRight: 5 }}>
+          {s.name}
+        </Col>
         <Col>
           <span
             className="showIcon"
@@ -274,7 +310,7 @@ export default function Sidebar(props) {
           </Col>
         </Row>
         <Row gutter={8}>
-          <Col flex="auto">
+          <Col flex="auto" style={{ width: 45 }}>
             <Select
               showSearch
               style={{ width: "100%" }}
@@ -342,7 +378,7 @@ export default function Sidebar(props) {
               onClick={calculate}
               disabled={!props.signal || !chain}
             >
-              Посчитать
+              Рассчитать
             </Button>
           </Col>
           <Col>

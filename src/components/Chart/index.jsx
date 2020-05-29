@@ -231,7 +231,7 @@ export default function Chart(props) {
           type="number"
           domain={viewRange}
           // interval="preserveStartEnd"
-          label={{ value: "мкс", position: "right", offset: 0 }}
+          label={{ value: "мкс", position: "right", offset: 10 }}
           // scale="linear"
         />
         <YAxis

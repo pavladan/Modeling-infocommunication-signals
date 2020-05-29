@@ -12,39 +12,386 @@ export default function App() {
   const [collapsed, setCollapsed] = useState(false);
   const [signals, setSignals] = useState([
     {
-      name: "sin",
+      name: "Периодическая последовательность видеоимпульсов треугольной формы",
       id: "s0",
       show: false,
-      color: "red",
+      color: "#000",
       initial: {
-        type: "table",
-        leaps: [
-          {
-            key: 0,
-            amplitude: 1,
-            delay: 0,
-            fraquency: 6,
-            phase: -90,
-          },
-        ],
+        type: "func",
+        func: {
+          fn: "cases",
+          args: [
+            [
+              {
+                fn: "list",
+                arg: [
+                  {
+                    fn: "multiply",
+                    arg: [
+                      { fn: "divide", arg: [{ num: "1" }, { num: "1" }] },
+                      { sym: "t" },
+                    ],
+                  },
+                  {
+                    fn: "\\lbrack)",
+                    arg: [{ fn: "list", arg: [{ num: "0" }, { num: "1" }] }],
+                  },
+                ],
+              },
+              {},
+            ],
+            [
+              {
+                fn: "list",
+                arg: [
+                  {
+                    fn: "subtract",
+                    arg: [
+                      {
+                        fn: "multiply",
+                        arg: [
+                          {
+                            fn: "divide",
+                            arg: [
+                              { num: "1" },
+                              {
+                                fn: "subtract",
+                                arg: [{ num: "1" }, { num: "1.5" }],
+                              },
+                            ],
+                          },
+                          { sym: "t" },
+                        ],
+                      },
+                      {
+                        fn: "divide",
+                        arg: [
+                          {
+                            fn: "multiply",
+                            arg: [{ num: "1" }, { num: "1.5" }],
+                          },
+                          {
+                            fn: "subtract",
+                            arg: [{ num: "1" }, { num: "1.5" }],
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                  {
+                    fn: "\\lbrack)",
+                    arg: [{ fn: "list", arg: [{ num: "1" }, { num: "1.5" }] }],
+                  },
+                ],
+              },
+              {},
+            ],
+            [
+              {
+                fn: "list",
+                arg: [
+                  { num: "0" },
+                  {
+                    fn: "\\lbrack)",
+                    arg: [
+                      { fn: "list", arg: [{ num: "1.5" }, { num: "1.5" }] },
+                    ],
+                  },
+                ],
+              },
+              {},
+            ],
+            [
+              {
+                fn: "list",
+                arg: [
+                  {
+                    fn: "f",
+                    arg: [
+                      { fn: "subtract", arg: [{ sym: "t" }, { num: "1.5" }] },
+                    ],
+                  },
+                  { fn: "negate", arg: [{ sym: "∞" }] },
+                  { sym: "∞" },
+                ],
+              },
+              {},
+            ],
+            [null, {}],
+          ],
+        },
+        funcLatex:
+          "\\begin{cases}\\frac{1}{1}\\cdot t,\\left\\lbrack 0,1\\right) \\\\ \\frac{1}{1-1.5}\\cdot t-\\frac{1\\cdot 1.5}{1-1.5},\\left\\lbrack 1,1.5\\right) \\\\ 0,\\left\\lbrack 1.5,1.5\\right) \\\\ f\\mleft(t-1.5\\mright),\\left(-\\infty ,\\infty \\right) \\\\ \\end{cases}",
       },
     },
     {
-      name: "cos",
+      name: "Радиосигнал с ЛЧМ",
       id: "s1",
       show: false,
       color: "blue",
       initial: {
-        type: "table",
-        leaps: [
-          {
-            key: 0,
-            amplitude: 1,
-            delay: 0,
-            fraquency: 6,
-            phase: 0,
-          },
-        ],
+        type: "func",
+        func: {
+          fn: "multiply",
+          arg: [
+            { num: "1" },
+            {
+              fn: "cos",
+              arg: [
+                {
+                  fn: "add",
+                  arg: [
+                    {
+                      fn: "multiply",
+                      arg: [
+                        { num: "2" },
+                        { sym: "π" },
+                        { num: "5" },
+                        { sym: "t" },
+                      ],
+                    },
+                    {
+                      fn: "multiply",
+                      arg: [
+                        { num: "2" },
+                        { sym: "π" },
+                        {
+                          fn: "cot",
+                          sub: { num: "0" },
+                          sup: { sym: "t" },
+                          arg: [
+                            {
+                              fn: "differentialD",
+                              arg: [
+                                {
+                                  fn: "cases",
+                                  args: [
+                                    [
+                                      {
+                                        fn: "list",
+                                        arg: [
+                                          {
+                                            fn: "multiply",
+                                            arg: [
+                                              {
+                                                fn: "divide",
+                                                arg: [
+                                                  { num: "2" },
+                                                  { num: "5" },
+                                                ],
+                                              },
+                                              { sym: "t" },
+                                            ],
+                                          },
+                                          {
+                                            fn: "\\lbrack)",
+                                            arg: [
+                                              {
+                                                fn: "list",
+                                                arg: [
+                                                  { num: "0" },
+                                                  { num: "5" },
+                                                ],
+                                              },
+                                            ],
+                                          },
+                                        ],
+                                      },
+                                      {},
+                                    ],
+                                    [
+                                      {
+                                        fn: "list",
+                                        arg: [
+                                          { num: "0" },
+                                          {
+                                            fn: "\\lbrack)",
+                                            arg: [
+                                              {
+                                                fn: "list",
+                                                arg: [
+                                                  { num: "5" },
+                                                  { num: "7" },
+                                                ],
+                                              },
+                                            ],
+                                          },
+                                        ],
+                                      },
+                                      {},
+                                    ],
+                                    [
+                                      {
+                                        fn: "list",
+                                        arg: [
+                                          {
+                                            fn: "f",
+                                            arg: [
+                                              {
+                                                fn: "subtract",
+                                                arg: [
+                                                  { sym: "t" },
+                                                  { num: "7" },
+                                                ],
+                                              },
+                                            ],
+                                          },
+                                          { fn: "negate", arg: [{ sym: "∞" }] },
+                                          { sym: "∞" },
+                                        ],
+                                      },
+                                      {},
+                                    ],
+                                    [null, {}],
+                                  ],
+                                },
+                                { sym: "t" },
+                              ],
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                    {
+                      fn: "multiply",
+                      arg: [
+                        { num: "2" },
+                        { sym: "π" },
+                        {
+                          fn: "cot",
+                          sub: { num: "0" },
+                          sup: { sym: "t" },
+                          arg: [
+                            {
+                              fn: "differentialD",
+                              arg: [
+                                {
+                                  fn: "cases",
+                                  args: [
+                                    [
+                                      {
+                                        fn: "list",
+                                        arg: [
+                                          {
+                                            fn: "subtract",
+                                            arg: [
+                                              {
+                                                fn: "multiply",
+                                                arg: [
+                                                  {
+                                                    fn: "divide",
+                                                    arg: [
+                                                      { num: "2" },
+                                                      {
+                                                        fn: "subtract",
+                                                        arg: [
+                                                          { num: "5" },
+                                                          { num: "7" },
+                                                        ],
+                                                      },
+                                                    ],
+                                                  },
+                                                  { sym: "t" },
+                                                ],
+                                              },
+                                              {
+                                                fn: "divide",
+                                                arg: [
+                                                  {
+                                                    fn: "multiply",
+                                                    arg: [
+                                                      { num: "2" },
+                                                      { num: "7" },
+                                                    ],
+                                                  },
+                                                  {
+                                                    fn: "subtract",
+                                                    arg: [
+                                                      { num: "5" },
+                                                      { num: "7" },
+                                                    ],
+                                                  },
+                                                ],
+                                              },
+                                            ],
+                                          },
+                                          {
+                                            fn: "\\lbrack)",
+                                            arg: [
+                                              {
+                                                fn: "list",
+                                                arg: [
+                                                  { num: "5" },
+                                                  { num: "7" },
+                                                ],
+                                              },
+                                            ],
+                                          },
+                                        ],
+                                      },
+                                      {},
+                                    ],
+                                    [
+                                      {
+                                        fn: "list",
+                                        arg: [
+                                          { num: "0" },
+                                          {
+                                            fn: "\\lbrack)",
+                                            arg: [
+                                              {
+                                                fn: "list",
+                                                arg: [
+                                                  { num: "0" },
+                                                  { num: "5" },
+                                                ],
+                                              },
+                                            ],
+                                          },
+                                        ],
+                                      },
+                                      {},
+                                    ],
+                                    [
+                                      {
+                                        fn: "list",
+                                        arg: [
+                                          {
+                                            fn: "f",
+                                            arg: [
+                                              {
+                                                fn: "subtract",
+                                                arg: [
+                                                  { sym: "t" },
+                                                  { num: "7" },
+                                                ],
+                                              },
+                                            ],
+                                          },
+                                          { fn: "negate", arg: [{ sym: "∞" }] },
+                                          { sym: "∞" },
+                                        ],
+                                      },
+                                      {},
+                                    ],
+                                  ],
+                                },
+                                { sym: "t" },
+                              ],
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                    { num: "0" },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        funcLatex:
+          "1\\cdot \\cos \\mleft(2\\pi \\cdot 5\\cdot t+2\\pi \\cdot \\int ^t_0\\left(\\begin{cases}\\frac{2}{5}\\cdot t,\\left\\lbrack 0,5\\right) \\\\ 0,\\left\\lbrack 5,7\\right) \\\\ f\\mleft(t-7\\mright),\\left(-\\infty ,\\infty \\right) \\\\ \\end{cases}\\differentialD t\\right)+2\\pi \\int ^t_0\\left(\\begin{cases}\\frac{2}{5-7}t-\\frac{2\\cdot 7}{5-7},\\left\\lbrack 5,7\\right) \\\\ 0,\\left\\lbrack 0,5\\right) \\\\ f\\mleft(t-7\\mright),\\left(-\\infty ,\\infty \\right)\\end{cases}\\differentialD t\\right)+0\\mright)",
       },
     },
   ]);
@@ -198,13 +545,17 @@ export default function App() {
             deleteSignal={deleteSignal}
             signals={signals}
             editSignal={editSignal}
-						genNewId={genNewId}
-						setForceGetData={setForceGetData}
+            genNewId={genNewId}
+            setForceGetData={setForceGetData}
           />
         </Sider>
         <Layout className="site-layout">
           <Content style={{ margin: "0 16px" }}>
-            <Chart theme={theme} charts={[...signals, ...results]} forceGetData={forceGetData}/>
+            <Chart
+              theme={theme}
+              charts={[...signals, ...results]}
+              forceGetData={forceGetData}
+            />
           </Content>
         </Layout>
       </Layout>

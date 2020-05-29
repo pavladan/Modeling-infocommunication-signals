@@ -39,7 +39,6 @@ export default function SignalEdit(props) {
         .replace(/\\gg /g, "\\gt ")
         .replace(/\\int /g, "\\cot ");
       const ast = mathlive.latexToAST(fixedLatex);
-      console.log(fixedLatex, ast);
       setFunc(ast);
     }
   }, [funcLatex]);
@@ -69,8 +68,8 @@ export default function SignalEdit(props) {
     const exitSignal = signal;
     exitSignal.show = true;
     exitSignal.initial = getTabInitial();
-    props.save(exitSignal);
     props.close();
+    props.save(exitSignal);
   };
 
   return (

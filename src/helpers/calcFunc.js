@@ -5,7 +5,7 @@ export default ({ func, start = 0, end, numberPoints }) => {
   const data = [];
   const pointsFraq = fixed((end - start) / numberPoints);
 
-  for (let x = start; x < end; x = fixed(x + pointsFraq)) {
+  for (let x = start; x <= end; x = fixed(x + pointsFraq)) {
     let y;
     if (func) {
       y = parseMathJSON({ json: func, start, end, fraq: pointsFraq }, { t: x });

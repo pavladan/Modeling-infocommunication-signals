@@ -15,6 +15,7 @@ const clean = new CleanWebpackPlugin([outputDir]);
 const html = new HtmlWebpackPlugin({
   template: "./public/index.html"
 });
+const WorkerPlugin = require('worker-plugin');
 
 module.exports = env => {
   if (!process.env.NODE_ENV) process.env.NODE_ENV = "development";
@@ -82,7 +83,7 @@ module.exports = env => {
 		stats:{
 			errorDetails: true,
 		},
-    plugins: [clean, html],
+    plugins: [clean, html, new WorkerPlugin()],
     output: {
       filename: "[name].js",
       path: path.resolve(__dirname, outputDir),

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Typography,
   Button,
@@ -27,7 +27,7 @@ import SignalEdit from "../SignalEdit";
 import ChainEdit from "../ChainEdit";
 import CalcSettings from "../CalcSettings";
 import getRandomColor from "../../helpers/getRandomColor";
-import {saveAs} from 'file-saver';
+import { saveAs } from "file-saver";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -37,7 +37,19 @@ export default function Sidebar(props) {
     {
       name: "ФНЧ С05-50-50",
       id: "c0",
-      variables: {"Cz":38.37555614,"N1":1,"N2":2,"N3":0,"N4":2,"a1s":{"1":0.333895562},"a2e":{"1":0.206618944,"2":0.05270029},"a3x":{},"a4y":{"1":0,"2":0},"w2e":{"1":0.708416409,"2":0.992817444},"w4y":{"1":1.94802866,"2":1.348138999}},
+      variables: {
+        Cz: 38.37555614,
+        N1: 1,
+        N2: 2,
+        N3: 0,
+        N4: 2,
+        a1s: { "1": 0.333895562 },
+        a2e: { "1": 0.206618944, "2": 0.05270029 },
+        a3x: {},
+        a4y: { "1": 0, "2": 0 },
+        w2e: { "1": 0.708416409, "2": 0.992817444 },
+        w4y: { "1": 1.94802866, "2": 1.348138999 },
+      },
     },
   ]);
   const [chain, setChain] = useState();
@@ -45,8 +57,14 @@ export default function Sidebar(props) {
   const [signalEditOpen, setSignalEditOpen] = useState(false);
   const [chainEditOpen, setChainEditOpen] = useState(false);
   const [calcSettingsOpen, setClacSettingsOpen] = useState(false);
-	const [centralFraq, setCentralFraq] = useState(6);
+  const [centralFraq, setCentralFraq] = useState(6);
 
+  useEffect(() => {
+		props.setForceGetData(false);
+    if (!signalEditOpen) {
+      props.setForceGetData(true);
+    }
+  }, [signalEditOpen]);
   const editChain = (newChain) => {
     setChains((old) => {
       if (newChain.id !== undefined) {
@@ -127,23 +145,27 @@ export default function Sidebar(props) {
       initial: {
         type: "result",
         signal: curSignal,
-				chain: curChain.variables,
-				centralFraq
+        chain: curChain.variables,
+        centralFraq,
       },
     });
-	};
-	
-	const saveSignal = ()=>{
-		const cur = props.signals.find((e) => e.id === props.signal)
-		const blob = new Blob([JSON.stringify(cur.initial)], {type : 'application/json'});
-		saveAs(blob, cur.name+".sg");
-	}
+  };
 
-	const saveChart = ()=>{
-		const cur = chains.find((e) => chain === e.id)
-		const blob = new Blob([JSON.stringify(cur.variables)], {type : 'application/json'});
-		saveAs(blob, cur.name+".zv");
-	}
+  const saveSignal = () => {
+    const cur = props.signals.find((e) => e.id === props.signal);
+    const blob = new Blob([JSON.stringify(cur.initial)], {
+      type: "application/json",
+    });
+    saveAs(blob, cur.name + ".sg");
+  };
+
+  const saveChart = () => {
+    const cur = chains.find((e) => chain === e.id);
+    const blob = new Blob([JSON.stringify(cur.variables)], {
+      type: "application/json",
+    });
+    saveAs(blob, cur.name + ".zv");
+  };
   return (
     <div
       className="Sidebar"
@@ -174,7 +196,7 @@ export default function Sidebar(props) {
           </Col>
         </Row>
         <Row gutter={8}>
-          <Col flex="auto" style={{width:45}}>
+          <Col flex="auto" style={{ width: 45 }}>
             <Select
               showSearch
               style={{ width: "100%" }}
@@ -210,8 +232,8 @@ export default function Sidebar(props) {
               <Button
                 disabled={props.signal === undefined}
                 shape="circle"
-								icon={<DownloadOutlined />}
-								onClick={saveSignal}
+                icon={<DownloadOutlined />}
+                onClick={saveSignal}
               ></Button>
             </Tooltip>
           </Col>
@@ -286,8 +308,8 @@ export default function Sidebar(props) {
               <Button
                 disabled={chain === undefined}
                 shape="circle"
-								icon={<DownloadOutlined />}
-								onClick={saveChart}
+                icon={<DownloadOutlined />}
+                onClick={saveChart}
               ></Button>
             </Tooltip>
           </Col>
@@ -318,6 +340,7 @@ export default function Sidebar(props) {
               block
               icon={<LineChartOutlined />}
               onClick={calculate}
+              disabled={!props.signal || !chain}
             >
               Посчитать
             </Button>
@@ -382,7 +405,7 @@ export default function Sidebar(props) {
                   <Text
                     editable={{
                       onChange: (e) => {
-                        if (e) props.setNameOnResult(item.id,e);
+                        if (e) props.setNameOnResult(item.id, e);
                       },
                     }}
                   >
@@ -439,7 +462,12 @@ export default function Sidebar(props) {
         />
       )}
       {calcSettingsOpen && (
-        <CalcSettings centralFraq={centralFraq} setCentralFraq={setCentralFraq} visible close={(_) => setClacSettingsOpen(false)} />
+        <CalcSettings
+          centralFraq={centralFraq}
+          setCentralFraq={setCentralFraq}
+          visible
+          close={(_) => setClacSettingsOpen(false)}
+        />
       )}
     </div>
   );

@@ -20,7 +20,7 @@ export default function App() {
         type: "table",
         leaps: [
           {
-						key:0,
+            key: 0,
             amplitude: 1,
             delay: 0,
             fraquency: 6,
@@ -38,7 +38,7 @@ export default function App() {
         type: "table",
         leaps: [
           {
-						key:0,
+            key: 0,
             amplitude: 1,
             delay: 0,
             fraquency: 6,
@@ -49,19 +49,18 @@ export default function App() {
     },
   ]);
   const [signal, setSignal] = useState();
-  const [results, setResults] = useState([
-  ]);
+  const [results, setResults] = useState([]);
   const [sidebarWidth, setSidebarWidth] = useState(0);
-
+  const [forceGetData, setForceGetData] = useState(false);
   useEffect(() => {
-		const updateWindowDimensions = (e) => {
-			if (window.innerWidth < 406){
-				setSidebarWidth(window.innerWidth-36)
-			}else{
-				setSidebarWidth(370)
-			}
-		};
-		updateWindowDimensions();
+    const updateWindowDimensions = (e) => {
+      if (window.innerWidth < 406) {
+        setSidebarWidth(window.innerWidth - 36);
+      } else {
+        setSidebarWidth(370);
+      }
+    };
+    updateWindowDimensions();
     window.addEventListener("resize", updateWindowDimensions);
     return () => {
       window.removeEventListener("resize", updateWindowDimensions);
@@ -133,9 +132,9 @@ export default function App() {
         return r;
       });
     });
-	};
-	const setNameOnResult = (id,name)=>{
-		setResults((old) => {
+  };
+  const setNameOnResult = (id, name) => {
+    setResults((old) => {
       return old.map((r) => {
         if (r.id === id) {
           return { ...r, name: name };
@@ -143,15 +142,14 @@ export default function App() {
         return r;
       });
     });
-	}
-	const addResult=newResult=>{
-		setResults((old) => {
-        const ids = old.map((s) => s.id);
-        const newId = genNewId(ids, "r");
-        return [...old, { ...newResult, id: newId }];
-      
+  };
+  const addResult = (newResult) => {
+    setResults((old) => {
+      const ids = old.map((s) => s.id);
+      const newId = genNewId(ids, "r");
+      return [...old, { ...newResult, id: newId }];
     });
-	}
+  };
 
   const toggleShowResult = (id) => {
     setResults((old) => {
@@ -183,16 +181,16 @@ export default function App() {
           onCollapse={onCollapse}
           theme={theme}
           width={sidebarWidth}
-					breakpoint={"md"}
+          breakpoint={"md"}
         >
           <Sidebar
-            style={{ width: sidebarWidth}}
-						results={results}
-						addResult={addResult}
+            style={{ width: sidebarWidth }}
+            results={results}
+            addResult={addResult}
             deleteResult={deleteResult}
             toggleShowResult={toggleShowResult}
-						changeColorOnResult={changeColorOnResult}
-						setNameOnResult={setNameOnResult}
+            changeColorOnResult={changeColorOnResult}
+            setNameOnResult={setNameOnResult}
             changeColorOnSignal={changeColorOnSignal}
             signal={signal}
             setSignal={setSignal}
@@ -201,11 +199,12 @@ export default function App() {
             signals={signals}
             editSignal={editSignal}
 						genNewId={genNewId}
+						setForceGetData={setForceGetData}
           />
         </Sider>
         <Layout className="site-layout">
           <Content style={{ margin: "0 16px" }}>
-              <Chart theme={theme} charts={[...signals, ...results]} />
+            <Chart theme={theme} charts={[...signals, ...results]} forceGetData={forceGetData}/>
           </Content>
         </Layout>
       </Layout>

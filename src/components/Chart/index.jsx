@@ -17,19 +17,19 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import calcLeaps from "../../helpers/calcLeaps";
-import calcFunc from "../../helpers/calcFunc";
 import fixed from "../../helpers/fixed";
-import { InputNumber, Form, Popover, Button } from "antd";
-import calcReaction from "../../helpers/calcReaction";
-import { SettingOutlined } from "@ant-design/icons";
+import { InputNumber, Form, Popover, Button, message, Spin } from "antd";
+import { SettingOutlined, RestFilled } from "@ant-design/icons";
+
+let worker = new Worker("../../worker/main.js", { type: "module" });
 
 export default function Chart(props) {
   const [data, setData] = useState([]);
   const [viewRange, setViewRange] = useState([0, 10]);
   const [renderRange, setRenderRange] = useState([0, 10]);
-  const [numberPoints, setNumberPoints] = useState(12);
+  const [numberPoints, setNumberPoints] = useState(100);
   const [moving, setMoving] = useState(false);
+  const [loadingData, setLoadingData] = useState(false);
   const chartRef = useRef(null);
 
   useEffect(() => {
@@ -40,10 +40,19 @@ export default function Chart(props) {
   }, [props.staticRange]);
 
   useEffect(() => {
-    console.log(
-      "Need FIX NaN and Infinity and -Infinity !!!",
-      "\nDont job ∪  - (and)  !!!!!!"
-    );
+    const workerListener = (e) => {
+      const resp = e.data;
+      if (resp.type === "calc") {
+        setLoadingData(false);
+        setData(resp.data);
+      }
+    };
+    worker.addEventListener("message", workerListener);
+    worker.addEventListener("error", (err) => {
+      console.error(err);
+      message.error("Что-то пошло не так :(");
+      setLoadingData(false);
+    });
     const interval = 200;
     let direction;
     let timeout;
@@ -87,74 +96,54 @@ export default function Chart(props) {
     }
     return () => {
       !props.preview && document.removeEventListener("mousewheel", onWheel);
+      worker.removeEventListener("message", workerListener);
     };
   }, []);
-  const getChartData = (chart, range) => {
-    const { start, end, numberPoints } = range;
-    if (chart.initial) {
-      if (chart.initial.type === "table") {
-        return calcLeaps({
-          leaps: chart.initial.leaps,
-          start,
-          end,
-          numberPoints,
-        });
-      } else if (chart.initial.type === "func") {
-        return calcFunc({
-          func: chart.initial.func,
-          start,
-          end,
-          numberPoints,
-        });
-      } else if (chart.initial.type === "result") {
-        const signalData = getChartData(chart.initial.signal, range);
-        return calcReaction(
-          signalData,
-          chart.initial.chain,
-          chart.initial.centralFraq
-        );
-      }
-    } else if (chart.data) {
-      return chart.data.filter(({ x }) => x >= start && x < end);
-    }
-    return [];
-  };
 
   const calc = ({ start, end, numberPoints }) => {
     if (!props.charts || props.charts.length === 0) return [];
-    console.log("calc");
     const allCharts = props.charts;
-    const obj = {};
-    allCharts
-      .filter((c) => c.show)
-      .forEach((chart) => {
-        const data = getChartData(chart, { start, end, numberPoints });
-        data.forEach((e) => {
-          let x = e.x;
-          let y = e.y;
-          if (y === -Infinity || y === Infinity || y === NaN) {
-            y = undefined;
-          }
-          if (x !== undefined && y !== undefined) {
-            if (!obj[x]) obj[x] = {};
-            obj[x][chart.id] = y;
-          }
-        });
+    if (worker) {
+      worker.postMessage({
+        type: "calc",
+        charts: allCharts,
+        range: { start, end, numberPoints },
       });
-    return Object.entries(obj)
-      .map((e) => ({ x: +e[0], ...e[1] }))
-      .sort((a, b) => a.x - b.x);
+      setLoadingData(true);
+    }
   };
 
+  const prevCharts = usePrevious(props.charts);
+
   useMemo(() => {
-    setData(
+    if (
+      props.charts &&
+      (!prevCharts ||
+        JSON.stringify(prevCharts.map((e) => e.initial)) !==
+          JSON.stringify(props.charts.map((e) => e.initial)))
+    )
       calc({
         start: renderRange[0],
         end: renderRange[1],
         numberPoints,
-      })
-    );
-  }, [props.charts, renderRange, numberPoints]);
+      });
+  }, [props.charts]);
+  useMemo(() => {
+    calc({
+      start: renderRange[0],
+      end: renderRange[1],
+      numberPoints,
+    });
+	}, [renderRange, numberPoints]);
+	useMemo(()=>{
+		if(props.forceGetData){
+			calc({
+				start: renderRange[0],
+				end: renderRange[1],
+				numberPoints,
+			});
+		}
+	},[props.forceGetData])
   const calcValueFromPx = (px) => {
     const widthChartPx = chartRef.current.state.offset.width;
     const widthValue = viewRange[1] - viewRange[0];
@@ -280,6 +269,24 @@ export default function Chart(props) {
       }}
     >
       <div style={{ flex: 1 }}>{rechart}</div>
+      {!props.preview && loadingData && (
+        <div
+          style={{
+            position: "fixed",
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0,0,0,.1)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 1031,
+          }}
+        >
+          <Spin size="large" spinning={loadingData} />
+        </div>
+      )}
       {!props.preview && (
         <Popover
           trigger="click"
@@ -295,15 +302,14 @@ export default function Chart(props) {
                 <Form.Item label="Интервал отображения">
                   <InputNumber
                     size="small"
-                    value={renderRange[1]}
+                    defaultValue={renderRange[1]}
                     onPressEnter={(e) => e.target.blur()}
-                    onChange={(e) => {
-                      if (typeof e === "number" && e >= 0) {
-                        setRenderRange((old) => {
-                          if (e > old[0]) return [old[0], e];
-                          return old;
-                        });
-                      }
+                    min={0}
+                    onBlur={(e) => {
+                      setRenderRange((old) => {
+                        if (+e.target.value > old[0]) return [old[0], +e.target.value];
+                        return old;
+                      });
                     }}
                     parser={(e) => {
                       if (e.slice(-1) === ",") return e.slice(0, -1) + ".";
@@ -314,18 +320,15 @@ export default function Chart(props) {
                 <Form.Item label="Количество отсчетных точек на интервале отображения">
                   <InputNumber
                     size="small"
-                    value={numberPoints}
-                    onChange={(e) => {
-                      if (
-                        typeof e === "number" &&
-                        e > 1 &&
-                        e < 10000 &&
-                        Number.isInteger(e)
-                      ) {
-                        setNumberPoints(e);
-                      } else if (e === null) setNumberPoints(500);
-                    }}
+                    defaultValue={numberPoints}
                     onPressEnter={(e) => e.target.blur()}
+                    placeholder="2..10000"
+                    min={2}
+                    max={10000}
+                    precision={0}
+                    onBlur={(e) => {
+                      setNumberPoints(+e.target.value);
+                    }}
                   ></InputNumber>
                 </Form.Item>
               </Form>
@@ -343,4 +346,18 @@ export default function Chart(props) {
       )}
     </div>
   );
+}
+
+function usePrevious(value) {
+  // The ref object is a generic container whose current property is mutable ...
+  // ... and can hold any value, similar to an instance property on a class
+  const ref = useRef();
+
+  // Store current value in ref
+  useEffect(() => {
+    ref.current = value;
+  }, [value]); // Only re-run if value changes
+
+  // Return previous value (happens before update in useEffect above)
+  return ref.current;
 }

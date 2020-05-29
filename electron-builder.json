@@ -12,8 +12,8 @@
         "node_modules/**/*"
     ],
     "win": {
-        "icon": "public/favicon.png",
-        "target": ["portable"]
+        "icon": "public/favicon.ico",
+        "target": ["nsis"]
     },
     "mac": {
         "icon": "public/favicon.png",
@@ -22,6 +22,11 @@
     "linux": {
         "icon": "dist",
         "target": ["AppImage"]
-    },
+		},
+		"nsis": {
+			"oneClick": false,
+			"perMachine": true,
+			"allowToChangeInstallationDirectory": true
+		},
     "extends": null
 }

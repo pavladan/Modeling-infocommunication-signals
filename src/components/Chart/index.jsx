@@ -101,7 +101,7 @@ export default function Chart(props) {
   }, []);
 
   const calc = ({ start, end, numberPoints }) => {
-    if (!props.charts || props.charts.length === 0) return [];
+		if (!props.charts || props.charts.length === 0) return [];
     const allCharts = props.charts;
     if (worker) {
       worker.postMessage({

@@ -13,7 +13,8 @@ const outputDir = "./dist";
 
 const clean = new CleanWebpackPlugin([outputDir]);
 const html = new HtmlWebpackPlugin({
-  template: "./public/index.html"
+	template: "./public/index.html",
+	favicon: "./public/favicon.png"
 });
 const WorkerPlugin = require('worker-plugin');
 

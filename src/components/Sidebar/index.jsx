@@ -180,7 +180,7 @@ export default function Sidebar(props) {
       color: getRandomColor(),
       initial: {
         type: "result",
-        signal: curSignal,
+        signal: {...curSignal},
         chain: curChain.variables,
         centralFraq,
       },

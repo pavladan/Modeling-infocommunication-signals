@@ -23,6 +23,7 @@ function normalizing(data) {
 }
 
 export default function calcReaction(inputSignalData, chainVar, centralFraq) {
+	console.time('FirstWay')
   const signalData = normalizing(inputSignalData);
   console.log(signalData, chainVar, centralFraq);
   const { Cz, N1, N2, N3, N4, a1s, a2e, a3x, a4y, w2e, w4y } = chainVar;
@@ -323,5 +324,6 @@ export default function calcReaction(inputSignalData, chainVar, centralFraq) {
     Psi.push({ x: signalData[n].x, y: f(Psi_n) });
   }
   console.log(Psi);
+	console.timeEnd('FirstWay')
   return Psi;
 }

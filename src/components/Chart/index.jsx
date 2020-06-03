@@ -327,7 +327,9 @@ export default function Chart(props) {
                     max={10000}
                     precision={0}
                     onBlur={(e) => {
-                      setNumberPoints(+e.target.value);
+											if(e.target.value){
+												setNumberPoints(+e.target.value);
+											}
                     }}
                   ></InputNumber>
                 </Form.Item>

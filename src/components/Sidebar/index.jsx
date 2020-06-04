@@ -292,7 +292,7 @@ export default function Sidebar(props) {
             </Tooltip>
           </Col>
           <Col>
-            <Tooltip placement="bottom" title="Клонировать сигнал">
+            <Tooltip placement="bottom" title="Дублировать сигнал">
               <Button
                 disabled={props.signal === undefined}
                 shape="circle"
@@ -380,7 +380,7 @@ export default function Sidebar(props) {
             </Tooltip>
           </Col>
           <Col>
-            <Tooltip placement="bottom" title="Клонировать звено">
+            <Tooltip placement="bottom" title="Дублировать звено">
               <Button
                 disabled={chain === undefined}
                 shape="circle"

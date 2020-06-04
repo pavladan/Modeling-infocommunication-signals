@@ -194,21 +194,33 @@ export default function Sidebar(props) {
       type: "application/json",
     });
     saveAs(blob, cur.name + ".sg");
-  };
+	};
+	const increaseName = (oldName)=>{
+		let newName;
+    const indexName = +oldName.slice(-1);
+    if (!Number.isNaN(indexName)) {
+      newName = oldName.slice(0, -1) + (indexName + 1);
+    } else {
+      newName = oldName + " 2";
+		}
+		return newName
+	}
   const cloneSignal = (origSignal) => {
+    const newName = increaseName(origSignal.name)
     props.editSignal({
       ...origSignal,
       id: undefined,
-      name: origSignal.name + " (копия)",
+      name: newName,
       color: getRandomColor(),
       show: true,
     });
   };
   const cloneChain = (origChain) => {
+		const newName = increaseName(origChain.name)
     editChain({
       ...origChain,
       id: undefined,
-      name: origChain.name + " (копия)",
+      name: newName,
     });
   };
   const saveChart = () => {

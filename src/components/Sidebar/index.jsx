@@ -21,6 +21,7 @@ import {
   SettingFilled,
   LineChartOutlined,
   MinusOutlined,
+  CopyOutlined,
 } from "@ant-design/icons";
 import { ChromePicker } from "react-color";
 import SignalEdit from "../SignalEdit";
@@ -175,12 +176,12 @@ export default function Sidebar(props) {
     const curSignal = props.signals.find((e) => e.id === props.signal);
     const curChain = chains.find((e) => chain === e.id);
     props.addResult({
-      name: `${curSignal.name} / ${curChain.name} (${centralFraq})`,
+      name: `${curSignal.name} / ${curChain.name} (${centralFraq} МГц)`,
       show: true,
       color: getRandomColor(),
       initial: {
         type: "result",
-        signal: {...curSignal},
+        signal: { ...curSignal },
         chain: curChain.variables,
         centralFraq,
       },
@@ -194,7 +195,22 @@ export default function Sidebar(props) {
     });
     saveAs(blob, cur.name + ".sg");
   };
-
+  const cloneSignal = (origSignal) => {
+    props.editSignal({
+      ...origSignal,
+      id: undefined,
+      name: origSignal.name + " (копия)",
+      color: getRandomColor(),
+      show: true,
+    });
+  };
+  const cloneChain = (origChain) => {
+    editChain({
+      ...origChain,
+      id: undefined,
+      name: origChain.name + " (копия)",
+    });
+  };
   const saveChart = () => {
     const cur = chains.find((e) => chain === e.id);
     const blob = new Blob([JSON.stringify(cur.variables)], {
@@ -260,6 +276,18 @@ export default function Sidebar(props) {
                   )
                 }
                 icon={<EditFilled />}
+              ></Button>
+            </Tooltip>
+          </Col>
+          <Col>
+            <Tooltip placement="bottom" title="Клонировать сигнал">
+              <Button
+                disabled={props.signal === undefined}
+                shape="circle"
+                onClick={(_) =>
+                  cloneSignal(props.signals.find((s) => s.id == props.signal))
+                }
+                icon={<CopyOutlined />}
               ></Button>
             </Tooltip>
           </Col>
@@ -336,6 +364,16 @@ export default function Sidebar(props) {
                 onClick={(_) =>
                   setChainEditOpen(chains.find((s) => s.id == chain))
                 }
+              ></Button>
+            </Tooltip>
+          </Col>
+          <Col>
+            <Tooltip placement="bottom" title="Клонировать звено">
+              <Button
+                disabled={chain === undefined}
+                shape="circle"
+                icon={<CopyOutlined />}
+                onClick={(_) => cloneChain(chains.find((s) => s.id == chain))}
               ></Button>
             </Tooltip>
           </Col>

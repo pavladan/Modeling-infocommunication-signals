@@ -410,10 +410,10 @@ export default function App() {
   const [forceGetData, setForceGetData] = useState(false);
   useEffect(() => {
     const updateWindowDimensions = (e) => {
-      if (window.innerWidth < 406) {
+      if (window.innerWidth < 436) {
         setSidebarWidth(window.innerWidth - 36);
       } else {
-        setSidebarWidth(370);
+        setSidebarWidth(400);
       }
     };
     updateWindowDimensions();

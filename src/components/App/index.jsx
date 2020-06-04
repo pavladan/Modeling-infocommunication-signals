@@ -12,6 +12,15 @@ export default function App() {
   const [collapsed, setCollapsed] = useState(false);
   const [signals, setSignals] = useState([
     {
+			name: "Прямоугольный импульс",
+      id: "s99",
+      show: true,
+      color: "#000",
+			initial:{
+				type: "table", leaps: [{ key: 0, amplitude: 1, delay: 5 }] 
+			}
+		},
+    {
       name: "Периодическая последовательность видеоимпульсов треугольной формы",
       id: "s0",
       show: false,

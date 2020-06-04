@@ -14,7 +14,7 @@ export default function OperatorTransferFunction(props) {
     if (node) {
       // ^{\\colorbox{none}{n3x}}
       katex.render(
-        `K\\left(P\\right)=\\frac{G\\left(P\\right)}{CV\\left(P\\right)}=\\frac{\\prod ^{\\colorbox{none}{N3}}_{x\\mathop{=}1}\\left(P+\\colorbox{none}{a3x}\\right)\\cdot \\prod ^{\\colorbox{none}{N4}}_{y=1}\\left(P^2+2\\colorbox{none}{a4y}P+\\colorbox{none}{a4y}^2+\\colorbox{none}{w4y}^2\\right)}{\\colorbox{none}{Cz}\\prod ^{\\colorbox{none}{N1}}_{s=1}\\left(P+\\colorbox{none}{a1s}\\right)\\cdot \\prod ^{\\colorbox{none}{N2}}_{e=1}\\left(P^2+2\\colorbox{none}{a2e}P+\\colorbox{none}{a2e}^2+\\colorbox{none}{w2e}^2\\right)}`,
+        `K\\left(P\\right)=\\frac{G\\left(P\\right)}{CV\\left(P\\right)}=\\frac{\\prod ^{\\colorbox{none}{N3}}_{x\\mathop{=}1}\\left(P+\\colorbox{none}{a3x}\\right)\\cdot \\prod ^{\\colorbox{none}{N4}}_{y=1}\\left(P^2+2\\colorbox{none}{a4y}P+\\colorbox{none}{a4y}^2+\\colorbox{none}{w4y}^2\\right)}{\\colorbox{none}{Cz}\\prod ^{\\colorbox{none}{N1}}_{s=1}\\left(P+\\colorbox{none}{a1s}\\right)\\cdot \\prod ^{\\colorbox{none}{N2}}_{l=1}\\left(P^2+2\\colorbox{none}{a2e}P+\\colorbox{none}{a2e}^2+\\colorbox{none}{w2e}^2\\right)}`,
         node,
         {
           throwOnError: false,

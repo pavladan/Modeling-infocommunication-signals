@@ -13,20 +13,20 @@ const outputDir = "./dist";
 
 const clean = new CleanWebpackPlugin([outputDir]);
 const html = new HtmlWebpackPlugin({
-	template: "./public/index.html",
-	favicon: "./public/favicon.png"
+  template: "./public/index.html",
+  favicon: "./public/favicon.png",
 });
-const WorkerPlugin = require('worker-plugin');
+const WorkerPlugin = require("worker-plugin");
 
-module.exports = env => {
+module.exports = (env) => {
   if (!process.env.NODE_ENV) process.env.NODE_ENV = "development";
-	const mode = process.env.NODE_ENV;
+  const mode = process.env.NODE_ENV;
   const config = {
-		devtool: 'source-map',
+    devtool: "source-map",
     mode: mode,
     entry: srcDist + "/index.js",
     resolve: {
-      extensions: [".js", ".jsx"]
+      extensions: [".js", ".jsx"],
     },
     module: {
       rules: [
@@ -36,9 +36,9 @@ module.exports = env => {
             loader: "file-loader",
             options: {
               name: "fonts/[name].[ext]",
-              publicPath: "../"
-            }
-          }
+              publicPath: "./",
+            },
+          },
         },
         {
           test: /\.(png|svg|jpg|gif)$/,
@@ -46,22 +46,22 @@ module.exports = env => {
             loader: "file-loader",
             options: {
               name: "icons/[name].[ext]",
-              publicPath: "../"
-            }
-          }
+              publicPath: "./",
+            },
+          },
         },
         {
           test: /\.css$/,
-          loader: "style-loader!css-loader"
+          loader: "style-loader!css-loader",
         },
         {
           test: /\.(scss|sass)$/,
-          loader: "style-loader!css-loader!sass-loader"
-				},
-				{
-					test: /\.less$/,
-					loader: 'style-loader!css-loader!less-loader'
-				},
+          loader: "style-loader!css-loader!sass-loader",
+        },
+        {
+          test: /\.less$/,
+          loader: "style-loader!css-loader!less-loader",
+        },
         {
           test: /\.(js|jsx)$/,
           exclude: /(node_modules|bower_components)/,
@@ -69,27 +69,34 @@ module.exports = env => {
           options: {
             presets: ["@babel/preset-env", "@babel/preset-react"],
             plugins: [
-							[babelTransformClassPlugin, { loose: true }],
-							["import", { "libraryName": "antd", "libraryDirectory": "es", "style": "css" }],
-              "@babel/plugin-syntax-dynamic-import"
-            ]
-          }
+              [babelTransformClassPlugin, { loose: true }],
+              [
+                "import",
+                { libraryName: "antd", libraryDirectory: "es", style: "css" },
+              ],
+              "@babel/plugin-syntax-dynamic-import",
+            ],
+          },
         },
         {
           test: /.html$/,
-          loader: "html-loader"
-        }
-      ]
+          loader: "html-loader",
+        },
+      ],
     },
-		stats:{
-			errorDetails: true,
-		},
-    plugins: [clean, html, new WorkerPlugin()],
+    stats: {
+      errorDetails: true,
+    },
+    plugins: [
+      clean,
+      html,
+      new WorkerPlugin(),
+    ],
     output: {
       filename: "[name].js",
       path: path.resolve(__dirname, outputDir),
-      publicPath: ""
-    }
+      publicPath: "",
+    },
   };
   // if (mode === "production") {
   //   config.plugins.push(

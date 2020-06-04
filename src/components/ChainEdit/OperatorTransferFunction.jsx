@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import ReactDOM from "react-dom";
 import katex from "katex";
-import "katex/dist/katex.min.css";
+
 import { InputNumber, Popover, Button, Table } from "antd";
 
 export default function OperatorTransferFunction(props) {

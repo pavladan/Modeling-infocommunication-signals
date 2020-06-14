@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { MathFieldComponent } from "react-mathlive";
-import { Tabs } from "antd";
+import { Tabs, Tooltip } from "antd";
 import "./FunctionMode.scss";
 import katex from "katex";
 
@@ -32,9 +32,11 @@ export default function FunctionMode(props) {
           {
             title: "e",
             latex: "\\exponentialE",
+            placeholder: "e",
           },
           {
             latex: "\\pi",
+            placeholder: "\\pi",
           },
         ],
         [
@@ -58,6 +60,7 @@ export default function FunctionMode(props) {
           {
             title: "x _{y}",
             latex: "_{\\placeholder{}}",
+            placeholder: "_y",
           },
         ],
         [
@@ -77,10 +80,12 @@ export default function FunctionMode(props) {
           {
             title: "x^2",
             latex: "\\placeholder{}^2",
+            placeholder: "^2",
           },
           {
             title: "x^y",
             latex: "\\placeholder{}^{\\placeholder{}}",
+            placeholder: "^y",
           },
         ],
         [
@@ -100,10 +105,12 @@ export default function FunctionMode(props) {
           {
             title: "\\sqrt{x}",
             latex: "\\sqrt{\\placeholder{}}",
+            placeholder: "\\sqrt",
           },
           {
             title: "\\sqrt[y]{x}",
             latex: "\\sqrt[\\placeholder{}]{\\placeholder{}}",
+            placeholder: "\\sqrt[y]",
           },
         ],
       ],
@@ -114,83 +121,105 @@ export default function FunctionMode(props) {
         [
           {
             latex: "\\sin",
+            placeholder: "\\sin",
           },
           {
             latex: "\\arcsin",
+            placeholder: "\\arcsin",
           },
 
           {
             latex: "\\ln",
+            placeholder: "\\ln",
           },
           {
             title: "\\operatorname{ceil}(x)",
             latex: "\\operatorname{ceil}(\\placeholder{})",
+            placeholder: "\\operatorname{ceil}",
           },
           {
             title: "\\int ^t_0 x dt ",
-            latex: "\\int ^t_0\\left( \\placeholder{}\\differentialD t\\right) ",
+            latex:
+              "\\int ^t_0\\left( \\placeholder{}\\differentialD t\\right) ",
+            placeholder: "\\int ^t_0 ",
           },
           {
             title: "\\lvert x\\rvert",
             latex: "\\left|\\placeholder{}\\right|",
+            placeholder: "\\lvert x\\rvert",
           },
         ],
         [
           {
             latex: "\\cos",
+            placeholder: "\\cos",
           },
           {
             latex: "\\arccos",
+            placeholder: "\\arccos",
           },
 
           {
             latex: "\\log _{10}",
+            placeholder: "\\log _{10}",
           },
           {
             title: "\\operatorname{floor}(x)",
             latex: "\\operatorname{floor}(\\placeholder{})",
+            placeholder: "\\operatorname{floor}",
           },
           {
             title: "\\sum ^{x }_{n\\mathop{=}0}",
             latex: "\\sum ^{\\placeholder{} }_{n\\mathop{=}0}",
+            placeholder: "\\sum ^{x}_{n=0}",
           },
           {
             title: "\\operatorname{sign}(x)",
             latex: "\\operatorname{sign}(\\placeholder{})",
+            placeholder: "\\operatorname{sign}",
           },
         ],
         [
           {
             latex: "\\tan",
+            placeholder: "\\tan",
           },
           {
             latex: "\\arctan",
+            placeholder: "\\arctan",
           },
 
           {
             title: "\\log _{x}",
             latex: "\\log _{\\placeholder{}}",
+            placeholder: "\\log _{x}",
           },
           {
             title: "\\operatorname{round}(x)",
             latex: "\\operatorname{round}(\\placeholder{})",
+            placeholder: "\\operatorname{round}",
           },
 
           {
             title: "\\prod ^{x }_{n\\mathop{=}0}",
             latex: "\\prod ^{\\placeholder{} }_{n\\mathop{=}0}",
+            placeholder: "\\prod ^{x }_{n=0}",
           },
           {
             title: "f(x)",
             latex: "f(\\placeholder{})",
+            placeholder: "f(x)",
           },
-				],
-				[{
-					title: "\\begin{cases}x \\\\ y\\end{cases}",
-					latex:
-						"\\begin{cases}\\placeholder{} \\\\ \\placeholder{}\\end{cases}",
-					style: { fontSize: 12 },
-				},]
+        ],
+        [
+          {
+            title: "\\begin{cases}x \\\\ y\\end{cases}",
+            latex:
+              "\\begin{cases}\\placeholder{} \\\\ \\placeholder{}\\end{cases}",
+            style: { fontSize: 12 },
+            placeholder: "{",
+          },
+        ],
       ],
     },
     {
@@ -201,24 +230,31 @@ export default function FunctionMode(props) {
             title: "≠",
             latex: "\\ne",
             noKatex: true,
+            placeholder: "\\ne",
           },
           {
             latex: "\\le",
+            placeholder: "\\le",
           },
           {
             latex: "<",
+            placeholder: "<",
           },
           {
             latex: ">",
+            placeholder: ">",
           },
           {
             latex: "\\ge",
+            placeholder: "\\ge",
           },
           {
             latex: "\\infty",
+            placeholder: "\\infty",
           },
           {
             latex: "\\in",
+            placeholder: "\\in",
           },
           {},
         ],
@@ -249,25 +285,27 @@ export default function FunctionMode(props) {
                   <div className="keyboard-row" key={i}>
                     {b.map((b, i) => {
                       return b.latex ? (
-                        <div
-                          className="keyboard-button"
-                          onClick={(e) => {
-                            mathFieltRef.$insert(b.latex);
-                            mathFieltRef.$focus();
-                          }}
-                          key={i}
-                          style={b.style}
-                          ref={(node) => {
-                            if (node && !b.noKatex) {
-                              katex.render(b.title || b.latex, node, {
-                                throwOnError: false,
-                                trust: true,
-                              });
-                            }
-                          }}
-                        >
-                          {b.noKatex && b.title}
-                        </div>
+                        <Tooltip title={b.placeholder} mouseEnterDelay={1}>
+                          <div
+                            className="keyboard-button"
+                            onClick={(e) => {
+                              mathFieltRef.$insert(b.latex);
+                              mathFieltRef.$focus();
+                            }}
+                            key={i}
+                            style={b.style}
+                            ref={(node) => {
+                              if (node && !b.noKatex) {
+                                katex.render(b.title || b.latex, node, {
+                                  throwOnError: false,
+                                  trust: true,
+                                });
+                              }
+                            }}
+                          >
+                            {b.noKatex && b.title}
+                          </div>
+                        </Tooltip>
                       ) : (
                         <div className="keyboard-space" key={i}></div>
                       );
@@ -290,13 +328,13 @@ export default function FunctionMode(props) {
           <MathFieldComponent
             latex={props.latex}
             onChange={(e) => {
-							props.setLatex(e);
+              props.setLatex(e);
             }}
             mathFieldRef={(mf) => setMathFieltRef(mf)}
             mathFieldConfig={{
               defaultMode: "math",
-							locale: "ru-RU",
-							smartSuperscript: false,
+              locale: "ru-RU",
+              smartSuperscript: false,
             }}
           />
         </div>

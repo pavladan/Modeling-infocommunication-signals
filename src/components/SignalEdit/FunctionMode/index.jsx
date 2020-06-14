@@ -285,14 +285,13 @@ export default function FunctionMode(props) {
                   <div className="keyboard-row" key={i}>
                     {b.map((b, i) => {
                       return b.latex ? (
-                        <Tooltip title={b.placeholder} mouseEnterDelay={1}>
+                        <Tooltip title={b.placeholder} mouseEnterDelay={1} key={i}>
                           <div
                             className="keyboard-button"
                             onClick={(e) => {
                               mathFieltRef.$insert(b.latex);
                               mathFieltRef.$focus();
                             }}
-                            key={i}
                             style={b.style}
                             ref={(node) => {
                               if (node && !b.noKatex) {

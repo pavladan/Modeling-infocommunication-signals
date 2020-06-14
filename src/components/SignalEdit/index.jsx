@@ -48,9 +48,9 @@ export default function SignalEdit(props) {
       return { type: "table", leaps };
     } else if (activeTab === "1") {
       return { type: "func", func, funcLatex };
-    } else if (activeTab === "2"){
-			return importData;
-		}
+    } else if (activeTab === "2") {
+      return importData;
+    }
     return {};
   };
   const getEndSignal = () => {
@@ -61,8 +61,22 @@ export default function SignalEdit(props) {
       });
       const range = delay > 0 ? fixed(delay * 2) : 1;
       return range;
-    } 
-		return 1;
+    } else if (activeTab === "1" && funcLatex) {
+      const matches1 = [
+        ...funcLatex.matchAll(/(>|<|\\ne |\\le |\\ge )([0-9.]+)/g),
+      ];
+      const matches2 = [
+        ...funcLatex.matchAll(/,([0-9.]+)(\\right\)|\\right\\rbrack )/g),
+      ];
+      if (matches1.length > 0 || matches2.length > 0) {
+        const max = Math.max(
+          ...matches1.map((e) => e[2]),
+          ...matches2.map((e) => e[1])
+        );
+        return fixed(max * 2);
+      }
+    }
+    return 1;
   };
   const handleSave = (_) => {
     const exitSignal = signal;

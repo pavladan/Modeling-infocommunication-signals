@@ -1,0 +1,25 @@
+.Sidebar {
+  .name {
+    .title {
+      color: var(--text);
+      display: flex;
+      align-items: center;
+    }
+    .main-btn {
+      z-index: 1;
+      padding: 0;
+      margin-left: 10px;
+    }
+    .hide-btn {
+      transform: translateX(-37px);
+      padding: 0;
+      margin-left: 5px;
+      cursor: pointer;
+    }
+    &:hover {
+      .hide-btn {
+        transform: translateX(0);
+      }
+    }
+  }
+}

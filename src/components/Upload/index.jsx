@@ -1,52 +1,63 @@
-import React, { useState } from "react";
-import { Button, message } from "antd";
-import { UploadOutlined, PaperClipOutlined } from "@ant-design/icons";
+import React, { useRef } from "react";
+import { message } from "antd";
 import "./Upload.scss";
 
 export default function Upload(props) {
-  const [filename, setFilename] = useState();
-  const openFile = (e) => {
-    const fr = new FileReader();
-    const name = e.name;
-    fr.onload = (e) => {
-      try {
-        const result = e.target.result;
-        const data = JSON.parse(result);
-        props.setImportData(data);
-        message.success("Файл загружен успешно");
-        setFilename(name);
-      } catch (err) {
-        message.error("Ошибка при загрузке файла");
-      }
-    };
-    fr.readAsText(e);
+  const inputRef = useRef();
+  const openFile = (files) => {
+    const promises = [];
+    [...files].forEach((e) => {
+      console.log(e);
+      const promise = new Promise((resolve, reject) => {
+        const fr = new FileReader();
+        const regExp = new RegExp(`${props.accept}$`);
+        if (!e.name.match(regExp)) {
+          return reject("filename");
+        }
+        const name = e.name.replace(regExp, "");
+        fr.onload = (e) => {
+          try {
+            const result = e.target.result;
+            const data = JSON.parse(result);
+            resolve({
+              name,
+              data,
+            });
+          } catch (err) {
+            reject(err);
+          }
+        };
+        fr.readAsText(e);
+      });
+      promises.push(promise);
+    });
+    if (promises.length > 0) {
+      Promise.all(promises)
+        .then((e) => {
+          props.setImportData(e);
+          message.success("Файлы загружены успешно");
+        })
+        .catch((err) => {
+          if (err === "filename") {
+            message.error("Неподдерживаемый формат файла");
+          } else {
+            console.error(err);
+            message.error("Ошибка при загрузке файлов");
+          }
+        });
+    }
   };
 
   return (
-    <div className="Upload">
-      <div className="Upload-btn">
-        <Button
-          icon={<UploadOutlined />}
-          shape="round"
-          style={{ position: "relative" }}
-        >
-          Выберите файл
-          <input
-            type="file"
-            id="file-selector"
-            accept={props.accept}
-            onChange={(e) => openFile(e.target.files[0])}
-          ></input>
-        </Button>
-      </div>
-      <div className="file-name">
-        {filename && (
-          <div>
-            {" "}
-            <PaperClipOutlined /> {filename}
-          </div>
-        )}
-      </div>
+    <div className="Upload" onClick={(e) => inputRef.current.click()}>
+      <input
+        type="file"
+        id="file-selector"
+        accept={props.accept}
+        onChange={(e) => openFile(e.target.files)}
+        ref={inputRef}
+        multiple={true}
+      ></input>
     </div>
   );
 }

@@ -22,6 +22,7 @@ import {
   LineChartOutlined,
   MinusOutlined,
   CopyOutlined,
+  UploadOutlined,
 } from "@ant-design/icons";
 import { ChromePicker } from "react-color";
 import SignalEdit from "../SignalEdit";
@@ -29,6 +30,8 @@ import ChainEdit from "../ChainEdit";
 import CalcSettings from "../CalcSettings";
 import getRandomColor from "../../helpers/getRandomColor";
 import { saveAs } from "file-saver";
+import Upload from "../Upload";
+import "./Sidebar.scss";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -194,19 +197,19 @@ export default function Sidebar(props) {
       type: "application/json",
     });
     saveAs(blob, cur.name + ".sg");
-	};
-	const increaseName = (oldName)=>{
-		let newName;
+  };
+  const increaseName = (oldName) => {
+    let newName;
     const indexName = +oldName.slice(-1);
     if (!Number.isNaN(indexName)) {
       newName = oldName.slice(0, -1) + (indexName + 1);
     } else {
       newName = oldName + " 2";
-		}
-		return newName
-	}
+    }
+    return newName;
+  };
   const cloneSignal = (origSignal) => {
-    const newName = increaseName(origSignal.name)
+    const newName = increaseName(origSignal.name);
     props.editSignal({
       ...origSignal,
       id: undefined,
@@ -216,7 +219,7 @@ export default function Sidebar(props) {
     });
   };
   const cloneChain = (origChain) => {
-		const newName = increaseName(origChain.name)
+    const newName = increaseName(origChain.name);
     editChain({
       ...origChain,
       id: undefined,
@@ -230,6 +233,22 @@ export default function Sidebar(props) {
     });
     saveAs(blob, cur.name + ".zv");
   };
+  const importSignals = (signals) => {
+    console.log(signals);
+    signals.forEach((e) => {
+      props.editSignal({
+        name: e.name,
+        initial: e.data,
+        show: true,
+        color: getRandomColor(),
+      });
+    });
+  };
+  const importChains = (chains) => {
+    chains.forEach((e) => {
+      editChain({ name: e.name, variables: e.data });
+    });
+  };
   return (
     <div
       className="Sidebar"
@@ -242,19 +261,30 @@ export default function Sidebar(props) {
       }}
     >
       <div className="Signals">
-        <Row gutter={8}>
+        <Row gutter={8} className="name">
           <Col>
-            <Title level={2} style={{ color: "var(--text)" }}>
+            <Title level={2} className="title">
               Сигналы
-              <Tooltip placement="right" title="Добавить новый сигнал">
+              <Tooltip title="Добавить новый сигнал">
                 <Button
                   shape="circle"
                   size="default"
                   type="default"
-                  style={{ padding: 0, marginLeft: 10 }}
                   icon={<PlusCircleFilled style={{ fontSize: 30 }} />}
                   onClick={(_) => setSignalEditOpen(true)}
+                  className="main-btn"
                 ></Button>
+              </Tooltip>
+              <Tooltip title="Импортировать сигналы">
+                <Button
+                  shape="circle"
+                  size="default"
+                  type="default"
+                  icon={<UploadOutlined />}
+                  className="hide-btn"
+                >
+                  <Upload accept={".sg"} setImportData={importSignals}></Upload>
+                </Button>
               </Tooltip>
             </Title>
           </Col>
@@ -332,19 +362,30 @@ export default function Sidebar(props) {
       </div>
       <Divider style={{ flex: "0 0 auto" }} />
       <div className="Chains">
-        <Row gutter={8}>
+        <Row gutter={8} className="name">
           <Col>
-            <Title level={2} style={{ color: "var(--text)" }}>
+            <Title level={2} className="title">
               Звенья
-              <Tooltip placement="right" title="Добавить новое звено">
+              <Tooltip title="Добавить новое звено">
                 <Button
                   shape="circle"
                   size="default"
                   type="default"
-                  style={{ padding: 0, marginLeft: 10 }}
+                  className="main-btn"
                   icon={<PlusCircleFilled style={{ fontSize: 30 }} />}
                   onClick={(_) => setChainEditOpen(true)}
                 ></Button>
+              </Tooltip>
+              <Tooltip title="Импортировать звенья">
+                <Button
+                  shape="circle"
+                  size="default"
+                  type="default"
+                  className="hide-btn"
+                  icon={<UploadOutlined />}
+                >
+                  <Upload accept={".zv"} setImportData={importChains}></Upload>
+                </Button>
               </Tooltip>
             </Title>
           </Col>

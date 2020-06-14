@@ -1,13 +1,10 @@
 import React, { useState } from "react";
 import "katex/dist/katex.min.css";
-import { Modal, Typography, Tabs } from "antd";
+import { Modal, Typography } from "antd";
 import OperatorTransferFunction from "./OperatorTransferFunction";
-import Upload from "../Upload";
 
 const { Title } = Typography;
-const { TabPane } = Tabs;
 export default function ChainEdit(props) {
-  const [activeTab, setActiveTab] = useState("0");
   const [title, setTitle] = useState(
     (props.chain && props.chain.name) || "Новое звено"
   );
@@ -26,13 +23,8 @@ export default function ChainEdit(props) {
       w4y: { 1: null },
     }
   );
-  const [importVariables, setImportVariables] = useState();
   const handleSave = (_) => {
-    if (activeTab === "0") {
-      props.save({...props.chain, name: title, variables });
-    } else if (activeTab === "1") {
-      props.save({...props.chain, name: title, variables: importVariables });
-    }
+    props.save({ ...props.chain, name: title, variables });
     props.close();
   };
   const setVariable = (variable) => {
@@ -43,17 +35,9 @@ export default function ChainEdit(props) {
       };
     });
   };
-  const setImportVariable = (variable) => {
-    setImportVariables((old) => {
-      return {
-        ...old,
-        ...variable,
-      };
-    });
-  };
   const validateVariables = () => {
     const validate = (arr) => {
-     return Object.values(arr).every((value) => {
+      return Object.values(arr).every((value) => {
         if (typeof value === "object") {
           return Object.values(value).every((value2) => {
             return value2 !== null;
@@ -63,14 +47,7 @@ export default function ChainEdit(props) {
         }
       });
     };
-    if (activeTab === "0") {
-      return title && validate(variables);
-    } else if (activeTab === "1") {
-      return title && importVariables && validate(importVariables);
-    }
-  };
-  const setImportData = (e) => {
-    setImportVariables(e);
+    return title && validate(variables);
   };
   return (
     <div className="SignalEdit">
@@ -98,23 +75,10 @@ export default function ChainEdit(props) {
         okButtonProps={{ disabled: !validateVariables() }}
         width={"95%"}
       >
-        <Tabs activeKey={activeTab} onTabClick={setActiveTab}>
-          <TabPane tab="Звено" key="0">
-            <OperatorTransferFunction
-              variables={variables}
-              setVariable={setVariable}
-            />
-          </TabPane>
-          <TabPane tab="Импорт" key="1">
-            <Upload accept=".zv" setImportData={setImportData} />
-            {/* {importVariables && (
-              <OperatorTransferFunction
-                variables={importVariables}
-                setVariable={setImportVariable}
-              />
-            )} */}
-          </TabPane>
-        </Tabs>
+        <OperatorTransferFunction
+          variables={variables}
+          setVariable={setVariable}
+        />
       </Modal>
     </div>
   );

@@ -240,16 +240,8 @@ export default function Chart(props) {
           interval="preserveStartEnd"
           scale={"linear"}
         />
-        {/* {!props.preview ? <Tooltip cursor={false} /> : null} */}
+        {!props.preview ? <Tooltip cursor={{ stroke: '#b4b6b8', strokeWidth: 1 }} /> : null}
 
-        {/* {props.charts.every((c) => c.name) && (
-          <Legend
-            verticalAlign="middle"
-            align="right"
-            iconType="circle"
-            height={36}
-          />
-        )} */}
         <CartesianGrid stroke={props.preview ? "#f5f5f5" : "#e1e4e7"} />
         {lines}
       </LineChart>

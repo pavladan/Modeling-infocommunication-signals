@@ -248,7 +248,7 @@ export default function Sidebar(props) {
     chains.forEach((e) => {
       editChain({ name: e.name, variables: e.data });
     });
-  };
+	};
   return (
     <div
       className="Sidebar"
@@ -557,7 +557,8 @@ export default function Sidebar(props) {
                 shape="circle"
                 size="small"
                 style={{ marginLeft: 5 }}
-                icon={<DownloadOutlined></DownloadOutlined>}
+								icon={<DownloadOutlined></DownloadOutlined>}
+								onClick={_=>props.saveResult(item.id)}
               ></Button>
               <Button
                 shape="circle"

@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import Chart from "../Chart";
-import { Layout } from "antd";
+import { Layout, message } from "antd";
 import Sidebar from "../Sidebar";
 import Helmet from "react-helmet";
 
 const { Content, Sider } = Layout;
+let worker = new Worker("../../worker/main.js", { type: "module" });
 
 export default function App() {
   const [theme, setTheme] = useState("light");
@@ -12,14 +13,15 @@ export default function App() {
   const [collapsed, setCollapsed] = useState(false);
   const [signals, setSignals] = useState([
     {
-			name: "Прямоугольный импульс",
+      name: "Прямоугольный импульс",
       id: "s99",
       show: true,
       color: "#000",
-			initial:{
-				type: "table", leaps: [{ key: 0, amplitude: 1, delay: 5 }] 
-			}
-		},
+      initial: {
+        type: "table",
+        leaps: [{ key: 0, amplitude: 1, delay: 5 }],
+      },
+    },
     {
       name: "Периодическая последовательность видеоимпульсов треугольной формы",
       id: "s0",
@@ -408,6 +410,9 @@ export default function App() {
   const [results, setResults] = useState([]);
   const [sidebarWidth, setSidebarWidth] = useState(0);
   const [forceGetData, setForceGetData] = useState(false);
+  const [renderRange, setRenderRange] = useState([0, 10]);
+  const [numberPoints, setNumberPoints] = useState(100);
+
   useEffect(() => {
     const updateWindowDimensions = (e) => {
       if (window.innerWidth < 436) {
@@ -421,7 +426,8 @@ export default function App() {
     return () => {
       window.removeEventListener("resize", updateWindowDimensions);
     };
-  });
+  }, []);
+
   const onCollapse = (state) => {
     setCollapsed(state);
   };
@@ -523,6 +529,48 @@ export default function App() {
     });
   };
 
+  const saveResult = (id) => {
+    const cur = results.find((e) => e.id === id);
+
+    const getCalc = new Promise((resolve, reject) => {
+      worker.postMessage({
+        type: "calc",
+        charts: [cur],
+        range: { start: renderRange[0], end: renderRange[1], numberPoints },
+      });
+      const workerListener = (e) => {
+        worker.removeEventListener("message", workerListener);
+        if (e.data.type === "calc") {
+          const resp = e.data.data;
+          resolve(resp);
+        } else {
+          reject(e);
+        }
+      };
+      worker.addEventListener("message", workerListener);
+      worker.addEventListener("error", (err) => {
+        worker.removeEventListener("message", workerListener);
+        reject(err);
+      });
+    });
+
+    getCalc
+      .then((data) => {
+				let resString = '';
+				data.forEach(e=>{
+					resString+=e[id] + '\n'
+				})
+        const blob = new Blob([resString], {
+          type: "application/json",
+        });
+        saveAs(blob, cur.name + ".res");
+      })
+      .catch((err) => {
+        console.error(err);
+        message.error("Что-то пошло не так :(");
+      });
+  };
+
   return (
     <div className="App">
       <Helmet>
@@ -556,6 +604,7 @@ export default function App() {
             editSignal={editSignal}
             genNewId={genNewId}
             setForceGetData={setForceGetData}
+            saveResult={saveResult}
           />
         </Sider>
         <Layout className="site-layout">
@@ -564,6 +613,10 @@ export default function App() {
               theme={theme}
               charts={[...signals, ...results]}
               forceGetData={forceGetData}
+              renderRange={renderRange}
+              setRenderRange={setRenderRange}
+              numberPoints={numberPoints}
+              setNumberPoints={setNumberPoints}
             />
           </Content>
         </Layout>

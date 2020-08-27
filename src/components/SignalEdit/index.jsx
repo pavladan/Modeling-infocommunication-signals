@@ -46,7 +46,7 @@ export default function SignalEdit(props) {
       return { type: "table", leaps };
     } else if (activeTab === "1") {
       return { type: "func", func, funcLatex };
-    } 
+    }
     return {};
   };
   const getEndSignal = () => {
@@ -155,7 +155,6 @@ export default function SignalEdit(props) {
           <Col span={24} md={12} style={{ minHeight: 200 }}>
             <Chart
               preview={true}
-              staticRange={getEndSignal()}
               charts={[
                 {
                   name: false,
@@ -165,6 +164,8 @@ export default function SignalEdit(props) {
                   initial: getTabInitial(),
                 },
               ]}
+              numberPoints={100}
+              renderRange={[0, getEndSignal()]}
             />
           </Col>
         </Row>

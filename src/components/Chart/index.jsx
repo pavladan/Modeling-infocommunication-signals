@@ -26,18 +26,15 @@ let worker = new Worker("../../worker/main.js", { type: "module" });
 export default function Chart(props) {
   const [data, setData] = useState([]);
   const [viewRange, setViewRange] = useState([0, 10]);
-  const [renderRange, setRenderRange] = useState([0, 10]);
-  const [numberPoints, setNumberPoints] = useState(100);
   const [moving, setMoving] = useState(false);
   const [loadingData, setLoadingData] = useState(false);
   const chartRef = useRef(null);
 
   useEffect(() => {
-    if (props.staticRange !== undefined) {
-      setViewRange((old) => [old[0], props.staticRange]);
-      setRenderRange((old) => [old[0], props.staticRange]);
+    if (props.renderRange) {
+      setViewRange([props.renderRange[0], props.renderRange[1]]);
     }
-  }, [props.staticRange]);
+  }, [props.renderRange]);
 
   useEffect(() => {
     const workerListener = (e) => {
@@ -101,8 +98,9 @@ export default function Chart(props) {
   }, []);
 
   const calc = ({ start, end, numberPoints }) => {
-		if (!props.charts || props.charts.length === 0) return [];
+    if (!props.charts || props.charts.length === 0) return [];
     const allCharts = props.charts;
+
     if (worker) {
       worker.postMessage({
         type: "calc",
@@ -123,27 +121,27 @@ export default function Chart(props) {
           JSON.stringify(props.charts.map((e) => e.initial)))
     )
       calc({
-        start: renderRange[0],
-        end: renderRange[1],
-        numberPoints,
+        start: props.renderRange[0],
+        end: props.renderRange[1],
+        numberPoints: props.numberPoints,
       });
   }, [props.charts]);
   useMemo(() => {
     calc({
-      start: renderRange[0],
-      end: renderRange[1],
-      numberPoints,
+      start: props.renderRange[0],
+      end: props.renderRange[1],
+      numberPoints: props.numberPoints,
     });
-	}, [renderRange, numberPoints]);
-	useMemo(()=>{
-		if(props.forceGetData){
-			calc({
-				start: renderRange[0],
-				end: renderRange[1],
-				numberPoints,
-			});
-		}
-	},[props.forceGetData])
+  }, [props.renderRange, props.numberPoints]);
+  useMemo(() => {
+    if (props.forceGetData) {
+      calc({
+        start: props.renderRange[0],
+        end: props.renderRange[1],
+        numberPoints: props.numberPoints,
+      });
+    }
+  }, [props.forceGetData]);
   const calcValueFromPx = (px) => {
     const widthChartPx = chartRef.current.state.offset.width;
     const widthValue = viewRange[1] - viewRange[0];
@@ -302,12 +300,13 @@ export default function Chart(props) {
                 <Form.Item label="Интервал отображения">
                   <InputNumber
                     size="small"
-                    defaultValue={renderRange[1]}
+                    defaultValue={props.renderRange[1]}
                     onPressEnter={(e) => e.target.blur()}
                     min={0}
                     onBlur={(e) => {
-                      setRenderRange((old) => {
-                        if (+e.target.value > old[0]) return [old[0], +e.target.value];
+                      props.setRenderRange((old) => {
+                        if (+e.target.value > old[0])
+                          return [old[0], +e.target.value];
                         return old;
                       });
                     }}
@@ -320,16 +319,16 @@ export default function Chart(props) {
                 <Form.Item label="Количество отсчетных точек на интервале отображения">
                   <InputNumber
                     size="small"
-                    defaultValue={numberPoints}
+                    defaultValue={props.numberPoints}
                     onPressEnter={(e) => e.target.blur()}
                     placeholder="2..10000"
                     min={2}
                     max={10000}
                     precision={0}
                     onBlur={(e) => {
-											if(e.target.value){
-												setNumberPoints(+e.target.value);
-											}
+                      if (e.target.value) {
+                        props.setNumberPoints(+e.target.value);
+                      }
                     }}
                   ></InputNumber>
                 </Form.Item>
